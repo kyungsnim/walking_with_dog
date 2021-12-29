@@ -1,206 +1,211 @@
-import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_google_places/flutter_google_places.dart';
-import 'package:google_api_headers/google_api_headers.dart';
-import 'package:google_maps_webservice/places.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:get/get.dart';
+import 'package:google_place/google_place.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:walking_with_dog/constants/constants.dart';
-
-// final customTheme = ThemeData(
-//   brightness: Brightness.dark,
-//   inputDecorationTheme: const InputDecorationTheme(
-//     border: OutlineInputBorder(
-//       borderRadius: BorderRadius.all(Radius.circular(4.00)),
-//     ),
-//     contentPadding: EdgeInsets.symmetric(
-//       vertical: 12.50,
-//       horizontal: 10.00,
-//     ),
-//   ),
-// );
+import 'package:walking_with_dog/screens/place5_screen.dart';
+import 'package:walking_with_dog/widgets/loading_indicator.dart';
 
 class PlaceScreen extends StatefulWidget {
-  const PlaceScreen({Key? key}) : super(key: key);
-
   @override
   _PlaceScreenState createState() => _PlaceScreenState();
 }
 
-final homeScaffoldKey = GlobalKey<ScaffoldState>();
-final searchScaffoldKey = GlobalKey<ScaffoldState>();
-
 class _PlaceScreenState extends State<PlaceScreen> {
-  Mode? _mode = Mode.overlay;
+  Position? _location;
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+        .then((Position position) {
+      setState(() {
+        _location = position;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: homeScaffoldKey,
-      appBar: AppBar(
-        title: const Text("My App"),
-      ),
-      body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              _buildDropdownMenu(),
-              ElevatedButton(
-                onPressed: _handlePressButton,
-                child: const Text("Search places"),
-              ),
-              ElevatedButton(
-                child: const Text("Custom"),
-                onPressed: () {
-                  Navigator.of(context).pushNamed("/search");
-                },
-              ),
-            ],
-          )),
-    );
-  }
-
-  Widget _buildDropdownMenu() => DropdownButton(
-    value: _mode,
-    items: const <DropdownMenuItem<Mode>>[
-      DropdownMenuItem<Mode>(
-        child: Text("Overlay"),
-        value: Mode.overlay,
-      ),
-      DropdownMenuItem<Mode>(
-        child: Text("Fullscreen"),
-        value: Mode.fullscreen,
-      ),
-    ],
-    onChanged: (dynamic m) {
-      setState(() {
-        _mode = m;
-      });
-    },
-  );
-
-  void onError(PlacesAutocompleteResponse response) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(response.errorMessage!)),
-    );
-  }
-
-  Future<void> _handlePressButton() async {
-    // show input autocomplete with selected mode
-    // then get the Prediction selected
-    Prediction? p = await PlacesAutocomplete.show(
-      context: context,
-      apiKey: myGoogleApiKey,
-      onError: onError,
-      mode: _mode!,
-      language: "kr",
-      types: [''],
-      decoration: InputDecoration(
-        hintText: '검색',
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: const BorderSide(
-            color: Colors.white,
-          ),
+      resizeToAvoidBottomInset: true,
+      body: _location == null ?
+      SizedBox(
+          width: Get.width,
+          height: Get.height * 0.55,
+          child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  loadingIndicator(),
+                  const SizedBox(height: 10),
+                  const Text('현재 위치를 가져오고 있습니다.')
+                ],
+              )
+          )
+      ) : Container(
+        margin: EdgeInsets.only(right: 20, left: 20, top: 20),
+        child: ListView(
+          children: <Widget>[
+            _headerView(),
+            SizedBox(
+              height: Get.height * 0.02,
+            ),
+            _searchAreaView(),
+            SizedBox(
+              height: Get.height * 0.02,
+            ),
+            _advertiseAreaView(),
+            SizedBox(
+              height: Get.height * 0.02,
+            ),
+            _categoryIconView(),
+          ],
         ),
       ),
-      strictbounds: false,
-      components: [Component(Component.country, "kr")],
-    );
-
-    displayPrediction(p, context);
-  }
-}
-
-Future<void> displayPrediction(Prediction? p, BuildContext context) async {
-  if (p != null) {
-    // get detail (lat/lng)
-    GoogleMapsPlaces _places = GoogleMapsPlaces(
-      apiKey: myGoogleApiKey,
-      apiHeaders: await const GoogleApiHeaders().getHeaders(),
-    );
-    PlacesDetailsResponse detail =
-    await _places.getDetailsByPlaceId(p.placeId!);
-    final lat = detail.result.geometry!.location.lat;
-    final lng = detail.result.geometry!.location.lng;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("${p.description} - $lat/$lng")),
     );
   }
-}
 
-// custom scaffold that handle search
-// basically your widget need to extends [GooglePlacesAutocompleteWidget]
-// and your state [GooglePlacesAutocompleteState]
-class CustomSearchScaffold extends PlacesAutocompleteWidget {
-  CustomSearchScaffold({Key? key})
-      : super(
-    key: key,
-    apiKey: myGoogleApiKey,
-    sessionToken: Uuid().generateV4(),
-    language: "en",
-    components: [Component(Component.country, "uk")],
-  );
+  _headerView() {
+    return Row(
+      children: [
+        Image.asset(
+          'assets/icon/icon_5.png',
+          width: Get.width * 0.1,
+          height: Get.width * 0.05,
+        ),
+        Text(
+          '플레이스',
+          style: TextStyle(
+            fontSize: Get.width * 0.04,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
 
-  @override
-  _CustomSearchScaffoldState createState() => _CustomSearchScaffoldState();
-}
+  _searchAreaView() {
+    return Row(
+      children: [
+        Expanded(
+          child: TextField(
+            controller: _searchController,
+            decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.grey.shade200,
+                border: UnderlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                disabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: Colors.blueAccent,
+                ),
+                hintText: '검색어를 입력해주세요.'),
+          ),
+        ),
+        SizedBox(width: Get.width * 0.02),
+        ElevatedButton(
+          onPressed: () {
+            Get.to(() => Place5Screen(searchText: _searchController.text, location: _location!));
+          },
+          child: Text('검색'),
+          style: ElevatedButton.styleFrom(
+            primary: Colors.blueAccent,
+          ),
+        ),
+      ],
+    );
+  }
 
-class _CustomSearchScaffoldState extends PlacesAutocompleteState {
-  @override
-  Widget build(BuildContext context) {
-    final appBar = AppBar(title: AppBarPlacesAutoCompleteTextField());
-    final body = PlacesAutocompleteResult(
-      onTap: (p) {
-        displayPrediction(p, context);
-      },
-      logo: Row(
-        children: const [FlutterLogo()],
+  _advertiseAreaView() {
+    return Container(
+      height: Get.height * 0.4,
+      color: Colors.blueGrey,
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Text(
+              '업체 광고 영역',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: Get.width * 0.05,
+              ),
+            ),
+          ),
+        ],
       ),
     );
-    return Scaffold(key: searchScaffoldKey, appBar: appBar, body: body);
   }
 
-  @override
-  void onResponseError(PlacesAutocompleteResponse response) {
-    super.onResponseError(response);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(response.errorMessage!)),
+  _categoryIconView() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        InkWell(
+          onTap: () {
+            Get.to(() => Place5Screen(searchText: '애견 카페', location: _location!,));
+          },
+          child: _renderItem('assets/icon/icon_2.png', '카페'),
+        ),
+        InkWell(
+          onTap: () {
+            Get.to(() => Place5Screen(searchText: '동물 병원', location: _location!,));
+          },
+          child: _renderItem('assets/icon/icon_4.png', '병원'),
+        ),
+        InkWell(
+          onTap: () {
+            Get.to(() => Place5Screen(searchText: '애견 용품', location: _location!,));
+          },
+          child: _renderItem('assets/icon/icon_5.png', '용품점'),
+        ),
+        InkWell(
+          onTap: () {
+            Get.to(() => Place5Screen(searchText: '애견 미용', location: _location!,));
+          },
+          child: _renderItem('assets/icon/icon_6.png', '미용'),
+        ),
+      ],
     );
   }
 
-  @override
-  void onResponse(PlacesAutocompleteResponse? response) {
-    super.onResponse(response);
-    if (response != null && response.predictions.isNotEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Got answer")),
-      );
-    }
+  _renderItem(String path, String name) {
+    return Column(
+      children: [
+        Image.asset(
+          path,
+          width: Get.width * 0.2,
+          height: Get.width * 0.1,
+        ),
+        SizedBox(height: 3),
+        Text(name),
+      ],
+    );
   }
-}
-
-class Uuid {
-  final Random _random = Random();
-
-  String generateV4() {
-    // Generate xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx / 8-4-4-4-12.
-    final int special = 8 + _random.nextInt(4);
-
-    return '${_bitsDigits(16, 4)}${_bitsDigits(16, 4)}-'
-        '${_bitsDigits(16, 4)}-'
-        '4${_bitsDigits(12, 3)}-'
-        '${_printDigits(special, 1)}${_bitsDigits(12, 3)}-'
-        '${_bitsDigits(16, 4)}${_bitsDigits(16, 4)}${_bitsDigits(16, 4)}';
-  }
-
-  String _bitsDigits(int bitCount, int digitCount) =>
-      _printDigits(_generateBits(bitCount), digitCount);
-
-  int _generateBits(int bitCount) => _random.nextInt(1 << bitCount);
-
-  String _printDigits(int value, int count) =>
-      value.toRadixString(16).padLeft(count, '0');
 }

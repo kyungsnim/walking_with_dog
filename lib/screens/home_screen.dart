@@ -74,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             children: [
               WalkScreen(), //Walk2Screen(),
               HistoryScreen(),
-              Place5Screen(),
+              PlaceScreen(),
               MyScreen(),
             ],
             controller: pageController, // controller를 지정해주면 각 페이지별 인덱스로 컨트롤 가능
