@@ -16,6 +16,8 @@ class HistoryScreen extends StatefulWidget {
 class _HistoryScreenState extends State<HistoryScreen> {
   int saveDataLength = 0;
   List<List<String>> saveData = [];
+  double accumulatedDistance = 0;
+  int accumulatedTime = 0;
 
   @override
   void initState() {
@@ -30,10 +32,31 @@ class _HistoryScreenState extends State<HistoryScreen> {
           print('saveData$i');
           setState(() {
             saveData.add(prefs.getStringList('saveData$i')!);
+
+            accumulatedTime += transStringToSeconds(saveData[i][0]);
+            accumulatedDistance += double.parse(saveData[i][1]);
           });
         }
       }
+
+      print('산책거리 : $accumulatedDistance');
+      print('산책시간 : $accumulatedTime');
     });
+  }
+
+  /// 산책시간 초로 환산
+  int transStringToSeconds(String string) {
+    // [0] : hours, [1] : minutes, [2] : seconds
+    List<String> splitData = string.split(":");
+
+    int hours = int.parse(splitData[0]);
+    int minutes = int.parse(splitData[1]);
+    int seconds = int.parse(splitData[2]);
+
+    print('hours: $hours, minutes: $minutes, seconds: $seconds');
+
+    print(hours*3600+minutes*60+seconds);
+    return hours*3600+minutes*60+seconds;
   }
 
   @override
@@ -45,6 +68,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             child: Column(
               children: [
                 const SizedBox(height: 50),
+                Text('우리 반려견 누적 거리 : ${accumulatedDistance}km | 누적 시간 : ${accumulatedTime}'),
                 Flexible(
                     child: ListView.builder(
                   shrinkWrap: true,
