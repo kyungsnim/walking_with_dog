@@ -62,6 +62,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: Colors.white,
         body: SizedBox(
             width: Get.width,
             height: Get.height,

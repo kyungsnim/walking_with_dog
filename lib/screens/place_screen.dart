@@ -7,8 +7,9 @@ import 'package:get/get.dart';
 import 'package:google_place/google_place.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:walking_with_dog/constants/constants.dart';
-import 'package:walking_with_dog/screens/place5_screen.dart';
+import 'package:walking_with_dog/screens/search_place_screen.dart';
 import 'package:walking_with_dog/widgets/loading_indicator.dart';
+import 'package:walking_with_dog/widgets/show_create_dialog.dart';
 
 class PlaceScreen extends StatefulWidget {
   @override
@@ -18,15 +19,18 @@ class PlaceScreen extends StatefulWidget {
 class _PlaceScreenState extends State<PlaceScreen> {
   Position? _location;
   final TextEditingController _searchController = TextEditingController();
+  TextEditingController _pwdController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
         .then((Position position) {
-      setState(() {
-        _location = position;
-      });
+      if(mounted) {
+        setState(() {
+          _location = position;
+        });
+      }
     });
   }
 
@@ -39,6 +43,7 @@ class _PlaceScreenState extends State<PlaceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
       body: _location == null ?
       SizedBox(
@@ -73,6 +78,13 @@ class _PlaceScreenState extends State<PlaceScreen> {
             _categoryIconView(),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        backgroundColor: Colors.blueAccent,
+        onPressed: () {
+          showCreateDialog(context, _pwdController);
+        },
       ),
     );
   }
@@ -131,7 +143,7 @@ class _PlaceScreenState extends State<PlaceScreen> {
         SizedBox(width: Get.width * 0.02),
         ElevatedButton(
           onPressed: () {
-            Get.to(() => Place5Screen(searchText: _searchController.text, location: _location!));
+            Get.to(() => SearchPlaceScreen(searchText: _searchController.text, location: _location!));
           },
           child: Text('검색'),
           style: ElevatedButton.styleFrom(
@@ -169,25 +181,25 @@ class _PlaceScreenState extends State<PlaceScreen> {
       children: [
         InkWell(
           onTap: () {
-            Get.to(() => Place5Screen(searchText: '애견 카페', location: _location!,));
+            Get.to(() => SearchPlaceScreen(searchText: '애견 카페', location: _location!,));
           },
           child: _renderItem('assets/icon/icon_2.png', '카페'),
         ),
         InkWell(
           onTap: () {
-            Get.to(() => Place5Screen(searchText: '동물 병원', location: _location!,));
+            Get.to(() => SearchPlaceScreen(searchText: '동물 병원', location: _location!,));
           },
           child: _renderItem('assets/icon/icon_4.png', '병원'),
         ),
         InkWell(
           onTap: () {
-            Get.to(() => Place5Screen(searchText: '애견 용품', location: _location!,));
+            Get.to(() => SearchPlaceScreen(searchText: '애견 용품', location: _location!,));
           },
           child: _renderItem('assets/icon/icon_5.png', '용품점'),
         ),
         InkWell(
           onTap: () {
-            Get.to(() => Place5Screen(searchText: '애견 미용', location: _location!,));
+            Get.to(() => SearchPlaceScreen(searchText: '애견 미용', location: _location!,));
           },
           child: _renderItem('assets/icon/icon_6.png', '미용'),
         ),

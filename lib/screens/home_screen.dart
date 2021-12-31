@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:walking_with_dog/screens/my_screen.dart';
-import 'package:walking_with_dog/screens/place2_screen.dart';
-import 'package:walking_with_dog/screens/place3_screen.dart';
-import 'package:walking_with_dog/screens/place4_screen.dart';
-import 'package:walking_with_dog/screens/place5_screen.dart';
 import 'package:walking_with_dog/screens/place_screen.dart';
 import 'package:walking_with_dog/screens/walk_screen.dart';
 
@@ -70,6 +66,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         length: 4,
         initialIndex: 0, //currentIndex!,
         child: Scaffold(
+          backgroundColor: Colors.white,
           body: PageView(
             children: [
               WalkScreen(), //Walk2Screen(),

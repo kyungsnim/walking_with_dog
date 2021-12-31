@@ -10,19 +10,19 @@ import 'package:walking_with_dog/models/search_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:walking_with_dog/widgets/loading_indicator.dart';
 
-class Place5Screen extends StatefulWidget {
+class SearchPlaceScreen extends StatefulWidget {
   final String searchText;
   final Position location;
 
-  const Place5Screen(
+  const SearchPlaceScreen(
       {required this.searchText, required this.location, Key? key})
       : super(key: key);
 
   @override
-  _Place5ScreenState createState() => _Place5ScreenState();
+  _SearchPlaceScreenState createState() => _SearchPlaceScreenState();
 }
 
-class _Place5ScreenState extends State<Place5Screen> {
+class _SearchPlaceScreenState extends State<SearchPlaceScreen> {
   TextEditingController _searchController = TextEditingController();
   String _searchText = '';
   late Position location;
@@ -45,6 +45,7 @@ class _Place5ScreenState extends State<Place5Screen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         leading: InkWell(
           onTap: () => Get.back(),

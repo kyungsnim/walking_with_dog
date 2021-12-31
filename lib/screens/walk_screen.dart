@@ -240,28 +240,34 @@ class _WalkScreenState extends State<WalkScreen>
     _locationSubscription =
         location.onLocationChanged.listen((lc.LocationData currentLocation) {
           /// 위치 변경시마다 totalDistance에 거리값 더해주기
-          _totalDistance += (measureExact(
-              _oldLocationData!.latitude, _oldLocationData!.longitude));
-          // Use current location
-          setState(() {
-            /// 산책경로 추가
-            raw.add([currentLocation.longitude!, currentLocation.latitude!, 200]);
-            /// 이전 위치 변경
-            _oldLocationData = _newLocationData;
-            /// 새로운 위치 변경
-            _newLocationData = currentLocation;
-            // _calculateDistance(_newLocationData!, _oldLocationData!);
+          if(_isPlaying) {
+            _totalDistance += (measureExact(
+                _oldLocationData!.latitude, _oldLocationData!.longitude));
+            // Use current location
+            setState(() {
+              /// 산책경로 추가
+              raw.add(
+                  [currentLocation.longitude!, currentLocation.latitude!, 200]);
 
-            /// 위치 이동마다 카메라 위치도 이동시켜주기
-            mapController!.animateCamera(
-              CameraUpdate.newCameraPosition(
-                CameraPosition(
-                  target: LatLng(currentLocation.latitude!, currentLocation.longitude!),
-                  zoom: 18.0,
+              /// 이전 위치 변경
+              _oldLocationData = _newLocationData;
+
+              /// 새로운 위치 변경
+              _newLocationData = currentLocation;
+              // _calculateDistance(_newLocationData!, _oldLocationData!);
+
+              /// 위치 이동마다 카메라 위치도 이동시켜주기
+              mapController!.animateCamera(
+                CameraUpdate.newCameraPosition(
+                  CameraPosition(
+                    target: LatLng(
+                        currentLocation.latitude!, currentLocation.longitude!),
+                    zoom: 18.0
+                  ),
                 ),
-              ),
-            );
-          });
+              );
+            });
+          }
         });
   }
 
@@ -330,10 +336,10 @@ class _WalkScreenState extends State<WalkScreen>
                     markers: Set<Marker>.from(_markers),
                     initialCameraPosition: _initialLocation!,
                     // myLocationEnabled: true,
-                    myLocationButtonEnabled: true,
+                    // myLocationButtonEnabled: true,
                     mapType: MapType.normal,
-                    zoomGesturesEnabled: true,
-                    zoomControlsEnabled: true,
+                    // zoomGesturesEnabled: true,
+                    // zoomControlsEnabled: true,
                     // polylines: Set<Polyline>.of(polylines.values),
                     onMapCreated: (GoogleMapController controller) {
                       mapController = controller;
@@ -342,53 +348,53 @@ class _WalkScreenState extends State<WalkScreen>
                   ),
                 ),
                 // Show zoom buttons
-                SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 10.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        ClipOval(
-                          child: Material(
-                            color: Colors.grey.shade400, // button color
-                            child: InkWell(
-                              splashColor: Colors.grey, // inkwell color
-                              child: const SizedBox(
-                                width: 50,
-                                height: 50,
-                                child: Icon(Icons.add),
-                              ),
-                              onTap: () {
-                                mapController!.animateCamera(
-                                  CameraUpdate.zoomIn(),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        ClipOval(
-                          child: Material(
-                            color: Colors.grey.shade400, // button color
-                            child: InkWell(
-                              splashColor: Colors.grey, // inkwell color
-                              child: const SizedBox(
-                                width: 50,
-                                height: 50,
-                                child: Icon(Icons.remove),
-                              ),
-                              onTap: () {
-                                mapController!.animateCamera(
-                                  CameraUpdate.zoomOut(),
-                                );
-                              },
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
+                // SafeArea(
+                //   child: Padding(
+                //     padding: const EdgeInsets.only(left: 10.0),
+                //     child: Column(
+                //       mainAxisAlignment: MainAxisAlignment.center,
+                //       children: <Widget>[
+                //         ClipOval(
+                //           child: Material(
+                //             color: Colors.grey.shade400, // button color
+                //             child: InkWell(
+                //               splashColor: Colors.grey, // inkwell color
+                //               child: const SizedBox(
+                //                 width: 50,
+                //                 height: 50,
+                //                 child: Icon(Icons.add),
+                //               ),
+                //               onTap: () {
+                //                 mapController!.animateCamera(
+                //                   CameraUpdate.zoomIn(),
+                //                 );
+                //               },
+                //             ),
+                //           ),
+                //         ),
+                //         const SizedBox(height: 20),
+                //         ClipOval(
+                //           child: Material(
+                //             color: Colors.grey.shade400, // button color
+                //             child: InkWell(
+                //               splashColor: Colors.grey, // inkwell color
+                //               child: const SizedBox(
+                //                 width: 50,
+                //                 height: 50,
+                //                 child: Icon(Icons.remove),
+                //               ),
+                //               onTap: () {
+                //                 mapController!.animateCamera(
+                //                   CameraUpdate.zoomOut(),
+                //                 );
+                //               },
+                //             ),
+                //           ),
+                //         )
+                //       ],
+                //     ),
+                //   ),
+                // ),
               ],
             ),
             Column(
@@ -472,7 +478,7 @@ class _WalkScreenState extends State<WalkScreen>
                       padding: const EdgeInsets.only(right: 10.0, bottom: 10.0),
                       child: Material(
                         child: InkWell(
-                          splashColor: Colors.grey, // inkwell color
+                          // splashColor: Colors.grey, // inkwell color
                           child: Container(
                             decoration: BoxDecoration(
                               border:
@@ -599,11 +605,11 @@ class _WalkScreenState extends State<WalkScreen>
                       ),
                       onTap: () async {
 
-                        _getCurrentLocation().then((_) async {
+                        _getCurrentLocation().then((position) async {
                           /// 시작 지점 저장
                           setState(() {
-                            startLatPoint = _currentPosition.latitude;
-                            startLngPoint = _currentPosition.longitude;
+                            startLatPoint = position.latitude;
+                            startLngPoint = position.longitude;
                           });
 
                           final Uint8List markerIcon = await getBytesFromAsset('assets/marker.png', 150);

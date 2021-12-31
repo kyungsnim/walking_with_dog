@@ -10,6 +10,8 @@ void main() async {
   runApp(const MyApp());
 }
 
+String globalPwd = '7777';
+
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 

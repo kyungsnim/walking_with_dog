@@ -34,16 +34,34 @@ class _EditMyPetInfoScreenState extends State<EditMyPetInfoScreen> {
   void initState() {
     super.initState();
     // _nameController
+    // _sexController.text = '남아';
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          title: const Text(
+            '반려견 정보 등록/수정',
+            style: TextStyle(
+              color: Colors.black,
+            ),
+          ),
+          leading: InkWell(
+            onTap: () => Get.back(),
+            child: Icon(
+              Icons.arrow_back_ios,
+              color: Colors.black,
+            ),
+          ),
+        ),
+        backgroundColor: Colors.white,
         resizeToAvoidBottomInset: false,
         body: Stack(
           children: [
             _myPetInfo(),
-            // test(),
           ],
         ));
   }
@@ -54,15 +72,10 @@ class _EditMyPetInfoScreenState extends State<EditMyPetInfoScreen> {
         horizontal: 24,
       ),
       child: ListView(
+        shrinkWrap: true,
+        physics: ScrollPhysics(),
         children: [
-          SizedBox(height: Get.height * 0.08),
-          Text(
-            '나의 반려견을 등록해주세요',
-            style: TextStyle(
-              fontSize: Get.width * 0.065,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          SizedBox(height: Get.height * 0.01),
           const SizedBox(
             height: 20,
           ),
@@ -133,6 +146,45 @@ class _EditMyPetInfoScreenState extends State<EditMyPetInfoScreen> {
     );
   }
 
+  dropField2(String label) {
+    return Container(
+      child: Row(
+        children: [
+          Expanded(
+            flex: 1,
+            child: DropdownButton(
+                hint: Text(label,
+                    style: TextStyle(
+                      fontFamily: 'Binggrae',
+                      fontSize: 18,
+                    )),
+                value: _sexController.text,
+                icon: Icon(Icons.arrow_downward),
+                underline: Container(
+                  height: 1,
+                  color: Colors.grey,
+                ),
+                items: _sexList.map((value) {
+                  return DropdownMenuItem(
+                    value: value,
+                    child: Text("$value",
+                        style: TextStyle(
+                          fontFamily: 'Binggrae',
+                          fontSize: 18,
+                        )),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _sexController.text = value as String;
+                  });
+                }),
+          ),
+        ],
+      ),
+    );
+  }
+
   dropField(String label) {
     return TextField(
       readOnly: true,
@@ -148,10 +200,8 @@ class _EditMyPetInfoScreenState extends State<EditMyPetInfoScreen> {
             _sexController.text = value;
           },
           itemBuilder: (BuildContext context) {
-            return _sexList
-                .map<PopupMenuItem<String>>((String value) {
-              return PopupMenuItem(
-                  child: Text(value), value: value);
+            return _sexList.map<PopupMenuItem<String>>((String value) {
+              return PopupMenuItem(child: Text(value), value: value);
             }).toList();
           },
         ),
@@ -168,15 +218,15 @@ class _EditMyPetInfoScreenState extends State<EditMyPetInfoScreen> {
 
         if (prefs.getInt('petCount') == null) {
           prefs.setInt('petCount', 0);
-          prefs.setInt('petIndex', 0);
+          prefs.setInt('petCurrentIndex', 0);
           num = 0;
         } else {
           num = prefs.getInt('petCount')!;
-          petIndex = prefs.getInt('petIndex')!;
         }
 
         /// 로컬DB에 저장하기
         prefs.setStringList('savedPetData$num', [
+          num.toString(),
           _imagePath,
           _nameController.text,
           _birthController.text,
@@ -184,10 +234,9 @@ class _EditMyPetInfoScreenState extends State<EditMyPetInfoScreen> {
           _kindController.text,
           _sexController.text,
           _completeReutering.toString(),
-          ]);
+        ]);
 
         prefs.setInt('petCount', ++num);
-        prefs.setInt('petIndex', ++petIndex);
 
         Get.back();
         Get.snackbar('반려견 등록', '등록이 완료되었습니다.');
@@ -250,7 +299,7 @@ class _EditMyPetInfoScreenState extends State<EditMyPetInfoScreen> {
   Future getGalleryImage() async {
     // List<XFile>? pickedFileList = await ImagePicker().pickMultiImage();
     XFile? pickedFile = await ImagePicker()
-        .pickImage(source: ImageSource.camera, imageQuality: 50);
+        .pickImage(source: ImageSource.gallery, imageQuality: 50);
     // final tempDir = await getTemporaryDirectory();
     // final path = tempDir.path;
     // int rand = new Math.Random().nextInt(10000);
@@ -266,7 +315,6 @@ class _EditMyPetInfoScreenState extends State<EditMyPetInfoScreen> {
 
       setState(() {
         _imagePath = _image.path;
-        // prefs.setString('imagePath}', _imagePath);
       });
     });
   }
