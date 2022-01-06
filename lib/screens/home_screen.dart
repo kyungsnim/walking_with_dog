@@ -98,43 +98,67 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               type: BottomNavigationBarType.fixed,
               items: <BottomNavigationBarItem>[
                 BottomNavigationBarItem(
-                    icon: Image.asset(
-                      'assets/icon/bottom1.png',
-                      width: 20,
+                    icon: Padding(
+                      padding: const EdgeInsets.only(bottom: 4.0),
+                      child: Image.asset(
+                        'assets/icon/bottom1.png',
+                        width: 30,
+                      ),
                     ),
-                    activeIcon: Image.asset(
-                      'assets/icon/bottom1.png',
-                      width: 30,
+                    activeIcon: Padding(
+                      padding: const EdgeInsets.only(bottom: 4.0),
+                      child: Image.asset(
+                        'assets/icon/bottom1.png',
+                        width: 35,
+                      ),
                     ),
                     label: '산책'),
                 BottomNavigationBarItem(
-                    icon: Image.asset(
-                      'assets/icon/bottom2.png',
-                      width: 15,
+                    icon: Padding(
+                      padding: const EdgeInsets.only(bottom: 4.0),
+                      child: Image.asset(
+                        'assets/icon/bottom2.png',
+                        width: 20,
+                      ),
                     ),
-                    activeIcon: Image.asset(
-                      'assets/icon/bottom2.png',
-                      width: 25,
+                    activeIcon: Padding(
+                      padding: const EdgeInsets.only(bottom: 4.0),
+                      child: Image.asset(
+                        'assets/icon/bottom2.png',
+                        width: 27,
+                      ),
                     ),
                     label: '기록'),
                 BottomNavigationBarItem(
-                    icon: Image.asset(
-                      'assets/icon/bottom3.png',
-                      width: 20,
+                    icon: Padding(
+                      padding: const EdgeInsets.only(bottom: 4.0),
+                      child: Image.asset(
+                        'assets/icon/bottom3.png',
+                        width: 30,
+                      ),
                     ),
-                    activeIcon: Image.asset(
-                      'assets/icon/bottom3.png',
-                      width: 30,
+                    activeIcon: Padding(
+                      padding: const EdgeInsets.only(bottom: 4.0),
+                      child: Image.asset(
+                        'assets/icon/bottom3.png',
+                        width: 35,
+                      ),
                     ),
                     label: '플레이스'),
                 BottomNavigationBarItem(
-                    icon: Image.asset(
-                      'assets/icon/bottom4.png',
-                      width: 20,
+                    icon: Padding(
+                      padding: const EdgeInsets.only(bottom: 4.0),
+                      child: Image.asset(
+                        'assets/icon/bottom4.png',
+                        width: 30,
+                      ),
                     ),
-                    activeIcon: Image.asset(
-                      'assets/icon/bottom4.png',
-                      width: 30,
+                    activeIcon: Padding(
+                      padding: const EdgeInsets.only(bottom: 4.0),
+                      child: Image.asset(
+                        'assets/icon/bottom4.png',
+                        width: 35,
+                      ),
                     ),
                     label: 'MY'),
               ],

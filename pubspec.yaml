@@ -51,12 +51,13 @@ dependencies:
   screenshot: ^1.2.3                # 산책경로/시간 결과화면 스크린샷용
   share: ^2.0.4                     # 스크린샷 공유하기 (테스트용)
 
-  # 구글 플레이스 검색용
+  # 플레이스 검색용
   flutter_google_places: ^0.3.0
   google_api_headers: ^1.1.1
   google_maps_webservice: ^0.0.19
   http: ^0.13.4
   provider: ^6.0.1
+  carousel_slider: ^4.0.0           # 배너광고 이미지 삽입용
 
   flutter_dotenv: ^5.0.2
   google_place: ^0.4.3
@@ -108,3 +109,4 @@ flutter:
     - assets/icon/icon_4.png
     - assets/icon/icon_5.png
     - assets/icon/icon_6.png
+    - assets/ads/

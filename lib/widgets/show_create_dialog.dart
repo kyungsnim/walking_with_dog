@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:walking_with_dog/constants/constants.dart';
 import 'package:walking_with_dog/screens/add_event_screen.dart';
 
 import '../main.dart';
@@ -54,22 +55,22 @@ showCreateDialog(
                         ),
                         enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
-                            color: Colors.blueAccent,
+                            color: kPrimaryFirstColor,
                           ),
                         ),
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
-                            color: Colors.blueAccent,
+                            color: kPrimaryFirstColor,
                           ),
                         ),
                         border: UnderlineInputBorder(
                           borderSide: BorderSide(
-                            color: Colors.blueAccent,
+                            color: kPrimaryFirstColor,
                           ),
                         ),
                       ),
                       controller: pwdController,
-                      cursorColor: Colors.blueAccent,
+                      cursorColor: kPrimaryFirstColor,
                     ),
                   ),
                 ],
@@ -85,7 +86,7 @@ showCreateDialog(
                     style: TextStyle(
                         fontFamily: 'Pretendard', fontSize: Get.width * 0.04)),
               ),
-              style: ElevatedButton.styleFrom(primary: Colors.blueAccent),
+              style: ElevatedButton.styleFrom(primary: kPrimaryFirstColor),
               onPressed: () async {
                 if (pwdController.text != globalPwd) {
                   Get.snackbar(

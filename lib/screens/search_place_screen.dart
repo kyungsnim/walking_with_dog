@@ -177,16 +177,17 @@ class SearchResultsList extends StatelessWidget {
                       // leading: Image.network(searchResults[index].placeUrl + '#photoList?type=all&pidx=0'),
                       title: Text(searchResults[index].placeName),
                       subtitle: Text(searchResults[index].roadAddressName),
-                      // trailing: Container(
-                      //   decoration: BoxDecoration(
-                      //     borderRadius: BorderRadius.circular(10),
-                      //     color: Colors.grey.withOpacity(0.2),
-                      //   ),
-                      //     child: Padding(
-                      //       padding: const EdgeInsets.all(8.0),
-                      //       child: Text(
-                      //           '${(double.parse(searchResults[index].distance) / 1000).toStringAsFixed(1)}km'),
-                      //     )),
+                      trailing: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.grey.withOpacity(0.2),
+                        ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                  '1.5km'),
+                                // '${(double.parse(searchResults[index].distance) / 1000).toStringAsFixed(1)}km'),
+                          )),
                     ),
                   );
                 }),

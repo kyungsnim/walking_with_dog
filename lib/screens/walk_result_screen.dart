@@ -10,6 +10,7 @@ import 'package:map_elevation/map_elevation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:walking_with_dog/constants/constants.dart';
 import 'package:walking_with_dog/constants/data4.dart';
 import 'package:screenshot/screenshot.dart';
 
@@ -68,7 +69,7 @@ class _WalkResultScreenState extends State<WalkResultScreen> {
                   Polyline(
                     // An optional tag to distinguish polylines in callback
                     points: getPoints(),
-                    color: Colors.blueAccent,
+                    color: kPrimaryFirstColor,
                     strokeWidth: 10.0,
                   ),
                 ],
@@ -183,10 +184,10 @@ class _WalkResultScreenState extends State<WalkResultScreen> {
                           child: Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: Colors.blueAccent,
-                              ),
-                              color: Colors.blueAccent.shade700,
+                              // border: Border.all(
+                              //   color: Colors.blueAccent,
+                              // ),
+                              color: kPrimaryFirstColor,
                             ),
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
@@ -196,14 +197,14 @@ class _WalkResultScreenState extends State<WalkResultScreen> {
                                   Icon(
                                     Icons.play_arrow,
                                     size: Get.width * 0.08,
-                                    color: Colors.white,
+                                    color: Colors.black,
                                   ),
                                   const SizedBox(width: 10),
                                   Text(
                                     '산책기록 남기기',
                                     style: TextStyle(
                                       fontSize: Get.width * 0.05,
-                                      color: Colors.white,
+                                      // color: Colors.white,
                                     ),
                                   ),
                                 ],

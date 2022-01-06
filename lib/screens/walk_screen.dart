@@ -10,6 +10,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart' as lc;
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:walking_with_dog/constants/constants.dart';
 import 'package:walking_with_dog/constants/data4.dart';
 import 'package:walking_with_dog/screens/walk_result_screen.dart';
 import 'package:walking_with_dog/widgets/loading_indicator.dart';
@@ -25,7 +26,7 @@ class _WalkScreenState extends State<WalkScreen>
     with AutomaticKeepAliveClientMixin {
   /// 산책 시간 관련
   IconData _icon = Icons.play_arrow;
-  Color _color = Colors.blueAccent;
+  Color _color = kPrimaryFirstColor;
   Timer? _timer;
   bool _isPlaying = false;
   bool _isPausing = false;
@@ -108,7 +109,7 @@ class _WalkScreenState extends State<WalkScreen>
       });
     } else { /// 일시중지버튼 누른 경우
       _icon = Icons.play_arrow;
-      _color = Colors.blueAccent;
+      _color = kPrimaryFirstColor;
       _status = '산책 시작';
       _pause();
       setState(() {
@@ -482,7 +483,7 @@ class _WalkScreenState extends State<WalkScreen>
                           child: Container(
                             decoration: BoxDecoration(
                               border:
-                              Border.all(color: Colors.blueAccent, width: 2),
+                              Border.all(color: kPrimaryFirstColor, width: 2),
                               borderRadius: BorderRadius.circular(100),
                             ),
                             height: 100,
@@ -577,7 +578,7 @@ class _WalkScreenState extends State<WalkScreen>
                       child: Container(
                         decoration: BoxDecoration(
                           border:
-                          Border.all(color: _isPlaying ? Colors.grey : Colors.blueAccent, width: 2),
+                          Border.all(color: _isPlaying ? Colors.grey : kPrimaryFirstColor, width: 2),
                           borderRadius: BorderRadius.circular(100),
                         ),
                         height: 100,
