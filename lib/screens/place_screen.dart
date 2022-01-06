@@ -1,13 +1,15 @@
-import 'dart:typed_data';
-
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
-import 'package:google_place/google_place.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:walking_with_dog/constants/constants.dart';
+import 'package:walking_with_dog/constants/data4.dart';
+import 'package:walking_with_dog/controller/event_controller.dart';
+import 'package:walking_with_dog/models/event_model.dart';
 import 'package:walking_with_dog/screens/search_place_screen.dart';
+import 'package:walking_with_dog/utils/launch_url.dart';
 import 'package:walking_with_dog/widgets/loading_indicator.dart';
 import 'package:walking_with_dog/widgets/show_create_dialog.dart';
 
@@ -16,19 +18,56 @@ class PlaceScreen extends StatefulWidget {
   _PlaceScreenState createState() => _PlaceScreenState();
 }
 
-class _PlaceScreenState extends State<PlaceScreen> {
-  Position? _location;
+class _PlaceScreenState extends State<PlaceScreen> with AutomaticKeepAliveClientMixin {
+  // Position? _location;
   final TextEditingController _searchController = TextEditingController();
   TextEditingController _pwdController = TextEditingController();
+  var imageList = [
+    InkWell(
+      onTap: () => launchUrl('https://place.map.kakao.com/2025194108'),
+      child: ClipRRect(
+        child: Image.asset('assets/ads/004.png'),
+      ),
+    ),
+    InkWell(
+      onTap: () => launchUrl('https://place.map.kakao.com/909687194'),
+      child: ClipRRect(
+        child: Image.asset('assets/ads/003.png'),
+      ),
+    ),
+    InkWell(
+      onTap: () => launchUrl('https://place.map.kakao.com/14733794'),
+      child: ClipRRect(
+        child: Image.asset('assets/ads/002.png'),
+      ),
+    ),
+  ];
+
+  var _lastRow = 0;
+  final FETCH_ROW = 10;
+  var stream;
+  ScrollController _scrollController = new ScrollController();
+  var eventRef = FirebaseFirestore.instance.collection('Event');
+  GlobalKey<ScaffoldState> scaffoldState = GlobalKey();
+
+  Stream<QuerySnapshot> newStream() {
+    return eventRef
+        .limit(FETCH_ROW * (_lastRow + 1))
+        .snapshots();
+  }
 
   @override
   void initState() {
     super.initState();
-    Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
-        .then((Position position) {
-      if(mounted) {
+
+    stream = newStream();
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent &&
+          mounted) {
         setState(() {
-          _location = position;
+          stream = newStream();
         });
       }
     });
@@ -37,56 +76,67 @@ class _PlaceScreenState extends State<PlaceScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      resizeToAvoidBottomInset: true,
-      body: _location == null ?
-      SizedBox(
-          width: Get.width,
-          height: Get.height * 0.55,
-          child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  loadingIndicator(),
-                  const SizedBox(height: 10),
-                  const Text('현재 위치를 가져오고 있습니다.')
-                ],
-              )
-          )
-      ) : Container(
-        margin: EdgeInsets.only(right: 20, left: 20, top: 20),
-        child: ListView(
-          children: <Widget>[
-            _headerView(),
-            SizedBox(
-              height: Get.height * 0.02,
-            ),
-            _searchAreaView(),
-            SizedBox(
-              height: Get.height * 0.02,
-            ),
-            _advertiseAreaView(),
-            SizedBox(
-              height: Get.height * 0.02,
-            ),
-            _categoryIconView(),
-          ],
+    return GetBuilder<EventController>(builder: (_) {
+      return Scaffold(
+        backgroundColor: Colors.white,
+        resizeToAvoidBottomInset: true,
+        body: myLocation == null
+            ? SizedBox(
+            width: Get.width,
+            height: Get.height * 0.55,
+            child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    loadingIndicator(),
+                    const SizedBox(height: 10),
+                    const Text('현재 위치를 가져오고 있습니다.')
+                  ],
+                )))
+            : Container(
+          margin: EdgeInsets.only(right: 20, left: 20, top: 20),
+          child: ListView(
+            children: <Widget>[
+              _headerView(),
+              SizedBox(
+                height: Get.height * 0.02,
+              ),
+              _searchAreaView(),
+              _advertiseAreaView(),
+              SizedBox(
+                height: Get.height * 0.02,
+              ),
+              _categoryIconView(),
+              SizedBox(
+                height: Get.height * 0.03,
+              ),
+              _recommentView(),
+              SizedBox(
+                height: Get.height * 0.03,
+              ),
+              Text('이벤트 소식', style: TextStyle(
+                fontSize: Get.width * 0.05,
+                fontWeight: FontWeight.bold,
+              ),),
+              _eventView(context),
+            ],
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        backgroundColor: Colors.blueAccent,
-        onPressed: () {
-          showCreateDialog(context, _pwdController);
-        },
-      ),
-    );
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.add),
+          backgroundColor: kPrimaryFirstColor,
+          onPressed: () {
+            showCreateDialog(context, _pwdController);
+          },
+        ),
+      );
+    });
   }
 
   _headerView() {
@@ -135,7 +185,7 @@ class _PlaceScreenState extends State<PlaceScreen> {
                 ),
                 prefixIcon: Icon(
                   Icons.search,
-                  color: Colors.blueAccent,
+                  color: kPrimaryFirstColor,
                 ),
                 hintText: '검색어를 입력해주세요.'),
           ),
@@ -143,35 +193,41 @@ class _PlaceScreenState extends State<PlaceScreen> {
         SizedBox(width: Get.width * 0.02),
         ElevatedButton(
           onPressed: () {
-            Get.to(() => SearchPlaceScreen(searchText: _searchController.text, location: _location!));
+            Get.to(() => SearchPlaceScreen(
+                searchText: _searchController.text, location: myLocation!));
           },
-          child: Text('검색'),
+          child: const Text('검색', style: TextStyle(
+            color: Colors.black,
+          )),
           style: ElevatedButton.styleFrom(
-            primary: Colors.blueAccent,
+            fixedSize: Size.fromHeight(Get.height * 0.053),
+            primary: kPrimaryFirstColor,
           ),
         ),
       ],
     );
   }
 
-  _advertiseAreaView() {
-    return Container(
-      height: Get.height * 0.4,
-      color: Colors.blueGrey,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Expanded(
-            child: Text(
-              '업체 광고 영역',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: Get.width * 0.05,
-              ),
-            ),
-          ),
-        ],
+  Widget _advertiseAreaView() {
+    return CarouselSlider(
+      options: CarouselOptions(
+        height: Get.height * 0.41,
+        autoPlay: true,
+        aspectRatio: 1 / 1,
+        viewportFraction: 1,
       ),
+      items: imageList.map((image) {
+        return Builder(
+          builder: (BuildContext context) {
+            return Container(
+              // color: Colors.green,
+              width: Get.width,
+              margin: const EdgeInsets.symmetric(horizontal: 4.0),
+              child: image,
+            );
+          },
+        );
+      }).toList(),
     );
   }
 
@@ -181,29 +237,99 @@ class _PlaceScreenState extends State<PlaceScreen> {
       children: [
         InkWell(
           onTap: () {
-            Get.to(() => SearchPlaceScreen(searchText: '애견 카페', location: _location!,));
+            Get.to(() => SearchPlaceScreen(
+                  searchText: '애견 카페',
+                  location: myLocation!,
+                ));
           },
           child: _renderItem('assets/icon/icon_2.png', '카페'),
         ),
         InkWell(
           onTap: () {
-            Get.to(() => SearchPlaceScreen(searchText: '동물 병원', location: _location!,));
+            Get.to(() => SearchPlaceScreen(
+                  searchText: '동물 병원',
+                  location: myLocation!,
+                ));
           },
           child: _renderItem('assets/icon/icon_4.png', '병원'),
         ),
         InkWell(
           onTap: () {
-            Get.to(() => SearchPlaceScreen(searchText: '애견 용품', location: _location!,));
+            Get.to(() => SearchPlaceScreen(
+                  searchText: '애견 용품',
+                  location: myLocation!,
+                ));
           },
           child: _renderItem('assets/icon/icon_5.png', '용품점'),
         ),
         InkWell(
           onTap: () {
-            Get.to(() => SearchPlaceScreen(searchText: '애견 미용', location: _location!,));
+            Get.to(() => SearchPlaceScreen(
+                  searchText: '애견 미용',
+                  location: myLocation!,
+                ));
           },
           child: _renderItem('assets/icon/icon_6.png', '미용'),
         ),
       ],
+    );
+  }
+
+  _recommentView() {
+    return InkWell(
+      onTap: () => launchUrl('https://c59mrhltv3l.typeform.com/to/khdXl2GW'),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(40),
+          color: Colors.black,
+        ),
+        child: Row(
+          children: [
+            SizedBox(
+              width: Get.width * 0.02,
+            ),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(40),
+              child: Image.asset(
+                'assets/marker2.png',
+                width: Get.width * 0.18,
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '좋은 플레이스 정보는 다같이~',
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: Get.width * 0.035,
+                  ),
+                ),
+                Text(
+                  '나만의 단골 플레이스 추천하기',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: Get.width * 0.042,
+                    fontWeight: FontWeight.bold,
+                  ),
+                )
+              ],
+            ),
+            Expanded(
+              child: Text(
+                '클릭',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.redAccent,
+                  fontSize: Get.width * 0.042,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            SizedBox(width: 5),
+          ],
+        ),
+      ),
     );
   }
 
@@ -220,4 +346,112 @@ class _PlaceScreenState extends State<PlaceScreen> {
       ],
     );
   }
+
+  _eventView(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+        stream: stream,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) return LinearProgressIndicator();
+          return _buildList(context, snapshot.data!.docs);
+        });
+  }
+
+  Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
+    return GridView.builder(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+      ),
+        shrinkWrap: true,
+        physics: ClampingScrollPhysics(),
+        itemCount: snapshot.length,
+        itemBuilder: (context, i) {
+          // print("i : " + i.toString());
+          final currentRow = (i + 1) ~/ FETCH_ROW;
+          if (_lastRow != currentRow) {
+            _lastRow = currentRow;
+          }
+          print("lastrow : " + _lastRow.toString());
+          return _buildListItem(context, snapshot[i]);
+        });
+  }
+
+  Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
+    EventModel event = EventModel.fromSnapshot(data);
+    return Padding(
+      key: ValueKey(event.id),
+      padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
+      child: Container(
+        decoration: BoxDecoration(
+          // color: Colors.white,
+          border: Border.all(color: Colors.grey.withOpacity(0.6)),
+          boxShadow: [
+            BoxShadow(
+                offset: Offset(0, 0), blurRadius: 5, color: Colors.white10)
+          ],
+        ),
+        child: GestureDetector(
+          onTap: () {
+            // Get.to(() => EventDetail(event));
+          },
+          child: _listItem(event),
+        ),
+      ),
+    );
+  }
+
+  _listItem(EventModel event) {
+    return Container(
+        width: Get.width,
+        margin: EdgeInsets.symmetric(vertical: 5),
+        // height: 200,
+        child: event.title != null
+            ? Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              height: Get.width * 0.3,
+              decoration: BoxDecoration(boxShadow: [
+                BoxShadow(blurRadius: 5, color: Colors.black54)
+              ]),
+              child: event.imgUrl == ''
+                  ? Placeholder()
+                  : CachedNetworkImage(
+                  imageUrl: event.imgUrl, fit: BoxFit.fill),
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Expanded(
+              child: Container(
+                height: Get.width * 0.25,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      event.title.length > 20
+                          ? event.title.toString().substring(0, 18) +
+                          '...'
+                          : event.title,
+                      softWrap: true,
+                      style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Binggrae', fontSize: Get.width * 0.03,),
+                    ),
+
+                    Text(
+                      event.createdAt.toString().substring(0, 16),
+                      softWrap: true,
+                      style: TextStyle(fontFamily: 'Binggrae', fontSize: 18),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        )
+            : SizedBox(),
+    );
+  }
+
+  @override
+  bool get wantKeepAlive => true;
 }

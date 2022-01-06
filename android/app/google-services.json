@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "388491841127",
+    "project_id": "dogtogether",
+    "storage_bucket": "dogtogether.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:388491841127:android:759f593155e3819e570ec2",
+        "android_client_info": {
+          "package_name": "com.kyungsnim.walking_with_dog"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "388491841127-k31pjj139mjqlb3i9tppb2m8ctud7kcv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kyungsnim.walking_with_dog",
+            "certificate_hash": "c7db24fd69f5efb54f9069c9dae8f41fa7d666c3"
+          }
+        },
+        {
+          "client_id": "388491841127-d84fud7t4pcjmgre3cs1c1snmsjoimd8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvsWKB9pSK5hC2mwW1x9dDEJ8E0wsEmAU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "388491841127-d84fud7t4pcjmgre3cs1c1snmsjoimd8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

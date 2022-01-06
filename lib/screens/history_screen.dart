@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:walking_with_dog/constants/constants.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({Key? key}) : super(key: key);
@@ -24,7 +25,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     super.initState();
 
     SharedPreferences.getInstance().then((prefs) {
-      if(prefs.getInt('count') != null) {
+      if (prefs.getInt('count') != null) {
         saveDataLength = prefs.getInt('count')!;
 
         /// 저장된 산책기록 불러오기
@@ -55,8 +56,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
     print('hours: $hours, minutes: $minutes, seconds: $seconds');
 
-    print(hours*3600+minutes*60+seconds);
-    return hours*3600+minutes*60+seconds;
+    print(hours * 3600 + minutes * 60 + seconds);
+    return hours * 3600 + minutes * 60 + seconds;
   }
 
   @override
@@ -69,39 +70,53 @@ class _HistoryScreenState extends State<HistoryScreen> {
             child: Column(
               children: [
                 const SizedBox(height: 50),
-                Text('우리 반려견 누적 거리 : ${accumulatedDistance}km | 누적 시간 : ${accumulatedTime}'),
-                Flexible(
-                    child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: saveData.length,
-                  itemBuilder: (_, index) {
-                    return _buildItem(index);
-                  },
-                ))
+                Text(
+                    '누적 거리 : ${accumulatedDistance}km | 누적 시간 : ${(accumulatedTime /
+                        60).truncate()}분 ${accumulatedTime % 60}초',
+                    style: TextStyle(
+                      fontSize: Get.width * 0.045,
+                      fontWeight: FontWeight.bold,
+                    )),
+                const SizedBox(height: 10),
+                Expanded(
+                  child: ListView.builder(
+                    padding: EdgeInsets.zero,
+
+                    /// 상단 여백 없애기
+                    shrinkWrap: true,
+                    itemCount: saveData.length,
+                    itemBuilder: (_, index) {
+                      return _buildItem(index);
+                    },
+                  ),
+                )
               ],
             )));
   }
 
   _buildItem(int index) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8),
       child: Container(
-          color: Colors.black12,
           width: Get.width,
-          height: Get.height * 0.28,
+          height: Get.height * 0.25,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: Colors.white,
+            border: Border.all(color: Colors.black, width: 2),
+            boxShadow: const [
+              BoxShadow(
+                offset: Offset(0, 0), blurRadius: 2, color: Colors.black54
+              )
+            ]
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 16.0, top: 16, bottom: 4),
-                child: Text(saveData[index][3], style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),),
-              ),
               Expanded(
                 flex: 3,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
                   child: Row(
                     children: [
                       Expanded(
@@ -110,62 +125,140 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text('산책시간', style: TextStyle(
-                              color: Colors.black54,
-                              fontSize: Get.width * 0.05,
-                            )),
-                            Text(saveData[index][0], style: TextStyle(
-                              fontSize: Get.width * 0.06,
-                              fontWeight: FontWeight.bold,
-                            )),
-                            const SizedBox(height: 10),
-                            Text('산책거리', style: TextStyle(
-                              color: Colors.black54,
-                              fontSize: Get.width * 0.05,
-                            )),
-                            Text('${saveData[index][1]}km', style: TextStyle(
-                              fontSize: Get.width * 0.06,
-                              fontWeight: FontWeight.bold,
-                            )),
+                            SizedBox(height: 10),
+                            Text(
+                              saveData[index][3],
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: Get.width * 0.03,
+                              ),
+                            ),
+                            Spacer(),
+                            Text('산책시간',
+                                style: TextStyle(
+                                  color: Colors.black54,
+                                  fontSize: Get.width * 0.05,
+                                )),
+                            Text(saveData[index][0],
+                                style: TextStyle(
+                                  fontSize: Get.width * 0.06,
+                                  fontWeight: FontWeight.bold,
+                                )),
+                            SizedBox(height: Get.height * 0.035),
+                            Text('산책거리',
+                                style: TextStyle(
+                                  color: Colors.black54,
+                                  fontSize: Get.width * 0.05,
+                                )),
+                            Text('${saveData[index][1]}km',
+                                style: TextStyle(
+                                  fontSize: Get.width * 0.06,
+                                  fontWeight: FontWeight.bold,
+                                )),
+                            Spacer(),
                           ],
                         ),
                       ),
                       Expanded(
                         flex: 5,
-                        child: InkWell(
-                          onTap: () => getCameraImage(index),
-                          /// 하루 사진 없는 경우
-                          child: saveData[index].length == 4 ? Container(
-                            width: Get.width * 0.4,
-                            alignment: Alignment.center,
-                            color: Colors.grey,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Text('산책한 하루 사진 남기기', style: TextStyle(
-                                  color: Colors.deepPurple,
-                                  fontWeight: FontWeight.bold,
-                                )),
-                                const SizedBox(height: 5),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(30),
-                                    color: Colors.amber,
-                                    boxShadow: const [
-                                      BoxShadow(
-                                        offset: Offset(1, 1),
-                                        blurRadius: 5,
-                                      )
-                                    ]
+                        child: SizedBox(
+                          width: Get.width * 0.5,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(height: 10),
+                              Expanded(
+                                child: InkWell(
+                                  onTap: () =>
+                                      showModalBottomSheet(context: context,
+                                        builder: ((builder) =>
+                                            bottomSheet(index,)),).then((_) {
+                                              Get.back();
+                                      }),
+
+                                  /// 하루 사진 없는 경우
+                                  child: saveData[index].length == 4
+                                      ? Container(
+                                      width: Get.width * 0.5,
+                                      alignment: Alignment.center,
+                                      color: Colors.grey,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.center,
+                                        children: [
+                                          Text('산책한 하루 사진 남기기',
+                                              style: TextStyle(
+                                                  color: kPrimaryFirstColor,
+                                                  fontWeight:
+                                                  FontWeight.bold,
+                                                  shadows: [
+                                                    Shadow(
+                                                        offset:
+                                                        Offset(0, 0),
+                                                        blurRadius: 5,
+                                                        color: Colors.black
+                                                            .withOpacity(
+                                                            0.8)),
+                                                  ])),
+                                          const SizedBox(height: 5),
+                                          Container(
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                BorderRadius.circular(
+                                                    30),
+                                                color: Colors.amber,
+                                                boxShadow: const [
+                                                  BoxShadow(
+                                                    offset: Offset(1, 1),
+                                                    blurRadius: 5,
+                                                  )
+                                                ]),
+                                            child: const Padding(
+                                              padding: EdgeInsets.all(8.0),
+                                              child: Icon(Icons.camera_alt),
+                                            ),
+                                          )
+                                        ],
+                                      ))
+                                      : Image.file(
+                                    File(saveData[index][4]),
+                                    fit: BoxFit.fitWidth,
                                   ),
-                                  child: const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Icon(Icons.camera_alt),
-                                  ),
-                                )
-                              ],
-                            )
-                          ) : Image.file(File(saveData[index][4]), fit: BoxFit.fitWidth,),
+                                ),
+                              ),
+                              SizedBox(height: 10),
+                              InkWell(
+                                onTap: () {
+                                  viewWalkHistoryPolyLine(context, index);
+                                },
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      width: Get.width * 0.5,
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: Colors.grey, width: 2),
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                          children: const [
+                                            Icon(Icons.photo),
+                                            SizedBox(width: 5),
+                                            Text('산책 코스 다시보기'),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(height: 10),
+                            ],
+                          ),
                         ),
                       )
                       // Image.file(File(saveData[index][2]), fit: BoxFit.fill,),
@@ -173,54 +266,93 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 10),
-              Flexible(
-                flex: 1,
-                child: InkWell(
-                  onTap: () {
-                    viewWalkHistoryPolyLine(context, index);
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Container(
-                          width: Get.width * 0.5,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey, width: 2),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Icon(Icons.photo),
-                                SizedBox(width: 5),
-                                Text('산책 코스 다시보기'),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              )
+              // const SizedBox(height: 10),
             ],
           )),
     );
   }
 
-  Future getCameraImage(int index) async {
+  // 카메라 아이콘 클릭시 띄울 모달 팝업
+  Widget bottomSheet(int index) {
+    return Container(
+        height: 100,
+        width: MediaQuery
+            .of(context)
+            .size
+            .width,
+        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        child: Column(
+          children: <Widget>[
+            Text(
+              '사진 선택',
+              style: TextStyle(
+                fontSize: Get.width * 0.05,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(
+              height: Get.height * 0.01,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    primary: kPrimaryFirstColor,
+                  ),
+                  icon: Icon(
+                    Icons.camera,
+                    size: Get.width * 0.06,
+                    color: Colors.black,
+                  ),
+                  onPressed: () {
+                    getCameraImage(ImageSource.camera, index);
+                    // takePhoto(ImageSource.camera);
+                  },
+                  label: Text(
+                    '직접 촬영',
+                    style: TextStyle(fontSize: Get.width * 0.04,
+                    color: Colors.black),
+                  ),
+                ),
+                SizedBox(width: Get.width * 0.05),
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    primary: kPrimaryFirstColor,
+                  ),
+                  icon: Icon(
+                    Icons.photo_library,
+                    size: Get.width * 0.06,
+                    color: Colors.black,
+                  ),
+                  onPressed: () {
+                    getCameraImage(ImageSource.gallery, index);
+                    // takePhoto(ImageSource.gallery);
+                  },
+                  label: Text(
+                    '앨범에서 선택',
+                    style: TextStyle(fontSize: Get.width * 0.04,
+                    color: Colors.black),
+                  ),
+                )
+              ],
+            )
+          ],
+        ));
+  }
+
+  Future getCameraImage(ImageSource source, int index) async {
     // List<XFile>? pickedFileList = await ImagePicker().pickMultiImage();
     XFile? pickedFile = await ImagePicker()
-        .pickImage(source: ImageSource.camera, imageQuality: 50);
+        .pickImage(source: source, imageQuality: 50);
 
-    String imageId = DateTime.now().millisecondsSinceEpoch.toString();
+    String imageId = DateTime
+        .now()
+        .millisecondsSinceEpoch
+        .toString();
     final directory = await getApplicationDocumentsDirectory();
-    File _image =
-    await File('${directory.path}/image_$imageId.png').create();
+    File _image = await File('${directory.path}/image_$imageId.png').create();
+
     /// 임시폴더가 아닌 AppDocument폴더에 저장
     pickedFile!.saveTo(_image.path);
 
@@ -231,7 +363,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       List<String> tmpData = prefs.getStringList('saveData$index')!;
 
       /// 이미지 저장 처음인 경우
-      if(tmpData.length == 4) {
+      if (tmpData.length == 4) {
         tmpData.add(_image.path);
         prefs.setStringList('saveData$index', tmpData);
       } else {
@@ -255,7 +387,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: const Text('지난 산책경로'),
-            content: Image.file(File(saveData[index][2]), fit: BoxFit.fitWidth,),
+            content: Image.file(
+              File(saveData[index][2]),
+              fit: BoxFit.fitWidth,
+            ),
             actions: [
               TextButton(
                 child: Container(

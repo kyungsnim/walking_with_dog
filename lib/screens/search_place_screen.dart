@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:walking_with_dog/constants/constants.dart';
 import 'package:walking_with_dog/models/search_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:walking_with_dog/widgets/loading_indicator.dart';
@@ -110,7 +111,7 @@ class _SearchPlaceScreenState extends State<SearchPlaceScreen> {
                 ),
                 prefixIcon: Icon(
                   Icons.search,
-                  color: Colors.blueAccent,
+                  color: kPrimaryFirstColor,
                 ),
                 hintText: '검색어를 입력해주세요.'),
           ),
@@ -118,15 +119,21 @@ class _SearchPlaceScreenState extends State<SearchPlaceScreen> {
         SizedBox(width: Get.width * 0.02),
         ElevatedButton(
           onPressed: () {
-            fetchSearchResults(
-                _searchController.text, http.Client(), location).then((_) => setState(() {}));            // Get.to(() => Place5Screen(
+            fetchSearchResults(_searchController.text, http.Client(), location)
+                .then((_) => setState(() {})); // Get.to(() => Place5Screen(
             //       searchText: _searchController.text,
             //       location: location,
             //     ));
           },
-          child: Text('검색'),
+          child: const Text(
+            '검색',
+            style: TextStyle(
+              color: Colors.black,
+            ),
+          ),
           style: ElevatedButton.styleFrom(
-            primary: Colors.blueAccent,
+            fixedSize: Size.fromHeight(Get.height * 0.053),
+            primary: kPrimaryFirstColor,
           ),
         ),
       ],
@@ -177,16 +184,17 @@ class SearchResultsList extends StatelessWidget {
                       // leading: Image.network(searchResults[index].placeUrl + '#photoList?type=all&pidx=0'),
                       title: Text(searchResults[index].placeName),
                       subtitle: Text(searchResults[index].roadAddressName),
-                      // trailing: Container(
-                      //   decoration: BoxDecoration(
-                      //     borderRadius: BorderRadius.circular(10),
-                      //     color: Colors.grey.withOpacity(0.2),
-                      //   ),
-                      //     child: Padding(
-                      //       padding: const EdgeInsets.all(8.0),
-                      //       child: Text(
-                      //           '${(double.parse(searchResults[index].distance) / 1000).toStringAsFixed(1)}km'),
-                      //     )),
+                      trailing: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.grey.withOpacity(0.2),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                              '${(double.parse(searchResults[index].distance) / 1000).toStringAsFixed(1)}km'),
+                        ),
+                      ),
                     ),
                   );
                 }),

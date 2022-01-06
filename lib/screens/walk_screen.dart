@@ -10,6 +10,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart' as lc;
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:walking_with_dog/constants/constants.dart';
 import 'package:walking_with_dog/constants/data4.dart';
 import 'package:walking_with_dog/screens/walk_result_screen.dart';
 import 'package:walking_with_dog/widgets/loading_indicator.dart';
@@ -25,7 +26,7 @@ class _WalkScreenState extends State<WalkScreen>
     with AutomaticKeepAliveClientMixin {
   /// 산책 시간 관련
   IconData _icon = Icons.play_arrow;
-  Color _color = Colors.blueAccent;
+  Color _color = kPrimaryFirstColor;
   Timer? _timer;
   bool _isPlaying = false;
   bool _isPausing = false;
@@ -108,7 +109,7 @@ class _WalkScreenState extends State<WalkScreen>
       });
     } else { /// 일시중지버튼 누른 경우
       _icon = Icons.play_arrow;
-      _color = Colors.blueAccent;
+      _color = kPrimaryFirstColor;
       _status = '산책 시작';
       _pause();
       setState(() {
@@ -198,23 +199,16 @@ class _WalkScreenState extends State<WalkScreen>
         setState(() {
           _initialLocation = CameraPosition(target: LatLng(location.latitude!, location.longitude!), zoom: 18);
         });
+
+        // _currentPosition = location;
         _newLocationData = location;
         _oldLocationData = location;
-
-        // mapController!.animateCamera(
-        //   CameraUpdate.newCameraPosition(
-        //     CameraPosition(
-        //       target: LatLng(location.latitude!, location.longitude!),
-        //       zoom: 18.0,
-        //     ),
-        //   ),
-        // );
       });
 
     }));
 
     /// 내 현재 위치 가져오기
-    // _getCurrentLocation();
+    _getCurrentLocation();
   }
 
   permissionCheckAndSubscription() async {
@@ -245,6 +239,8 @@ class _WalkScreenState extends State<WalkScreen>
                 _oldLocationData!.latitude, _oldLocationData!.longitude));
             // Use current location
             setState(() {
+              print('currentLocation.longitude! : ${currentLocation.longitude!}');
+              print('currentLocation.latitude!: ${currentLocation.latitude!}');
               /// 산책경로 추가
               raw.add(
                   [currentLocation.longitude!, currentLocation.latitude!, 200]);
@@ -482,7 +478,7 @@ class _WalkScreenState extends State<WalkScreen>
                           child: Container(
                             decoration: BoxDecoration(
                               border:
-                              Border.all(color: Colors.blueAccent, width: 2),
+                              Border.all(color: kPrimaryFirstColor, width: 2),
                               borderRadius: BorderRadius.circular(100),
                             ),
                             height: 100,
@@ -577,7 +573,7 @@ class _WalkScreenState extends State<WalkScreen>
                       child: Container(
                         decoration: BoxDecoration(
                           border:
-                          Border.all(color: _isPlaying ? Colors.grey : Colors.blueAccent, width: 2),
+                          Border.all(color: _isPlaying ? Colors.grey : kPrimaryFirstColor, width: 2),
                           borderRadius: BorderRadius.circular(100),
                         ),
                         height: 100,
@@ -605,7 +601,8 @@ class _WalkScreenState extends State<WalkScreen>
                       ),
                       onTap: () async {
 
-                        _getCurrentLocation().then((position) async {
+                        _getReturnCurrentLocation().then((position) async {
+
                           /// 시작 지점 저장
                           setState(() {
                             startLatPoint = position.latitude;
@@ -613,7 +610,7 @@ class _WalkScreenState extends State<WalkScreen>
                           });
 
                           final Uint8List markerIcon = await getBytesFromAsset('assets/marker.png', 150);
-                          final Marker marker = Marker(icon: BitmapDescriptor.fromBytes(markerIcon), markerId: const MarkerId('puppy'), position: LatLng(_currentPosition.latitude, _currentPosition.longitude));
+                          final Marker marker = Marker(icon: BitmapDescriptor.fromBytes(markerIcon), markerId: const MarkerId('puppy'), position: LatLng(startLatPoint, startLngPoint));
                           _markers.add(marker);
                         });
 
@@ -636,10 +633,10 @@ class _WalkScreenState extends State<WalkScreen>
 
   // Method for retrieving the current location
   _getCurrentLocation() async {
-    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+    Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
         .then((Position position) async {
       setState(() {
-        _currentPosition = position;
+        myLocation = position;
         print('CURRENT POS: $_currentPosition');
         mapController!.animateCamera(
           CameraUpdate.newCameraPosition(
@@ -655,6 +652,11 @@ class _WalkScreenState extends State<WalkScreen>
     }).catchError((e) {
       print(e);
     });
+  }
+
+  // Method for retrieving the current location
+  _getReturnCurrentLocation() async {
+    return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
   }
 
   // Method for retrieving the address

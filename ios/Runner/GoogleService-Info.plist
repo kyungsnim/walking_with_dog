@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>388491841127-e12i9egsvln0gt7cgub5soaqfp4euo03.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.388491841127-e12i9egsvln0gt7cgub5soaqfp4euo03</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>388491841127-k31pjj139mjqlb3i9tppb2m8ctud7kcv.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCoT_3rQjK8UPKPhmVx4AaVtbo8pNGr7ZU</string>
+	<key>GCM_SENDER_ID</key>
+	<string>388491841127</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.kyungsnim.walkingWithDog</string>
+	<key>PROJECT_ID</key>
+	<string>dogtogether</string>
+	<key>STORAGE_BUCKET</key>
+	<string>dogtogether.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:388491841127:ios:1031b887bd3799e5570ec2</string>
+</dict>
+</plist>
