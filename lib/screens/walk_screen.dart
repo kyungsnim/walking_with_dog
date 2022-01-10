@@ -82,9 +82,10 @@ class _WalkScreenState extends State<WalkScreen>
     }
 
     if (permission == LocationPermission.deniedForever) {
+      permission = await Geolocator.requestPermission();
       // Permissions are denied forever, handle appropriately.
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
+      // return Future.error(
+      //     'Location permissions are permanently denied, we cannot request permissions.');
     }
 
     // When we reach here, permissions are granted and we can

@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:walking_with_dog/constants/constants.dart';
 import 'package:walking_with_dog/models/my_pet_model.dart';
 import 'package:walking_with_dog/screens/register_pet_info_screen.dart';
 import 'package:walking_with_dog/screens/terms_of_location_service_screen.dart';
@@ -98,9 +99,9 @@ class _MyScreenState extends State<MyScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       savedPetData.isEmpty ||
-                              savedPetData[petCurrentIndex][0].isEmpty
+                          savedPetData[petCurrentIndex][0].isEmpty
                           ? // _imageFile == null ?
-                          needRegisterProfilePhoto()
+                      needRegisterProfilePhoto()
                           : myProfilePhoto()
                     ],
                   ),
@@ -134,10 +135,10 @@ class _MyScreenState extends State<MyScreen> {
                       child: Text(
                         '서비스 이용약관',
                         style: TextStyle(
-                          fontSize: Get.width * 0.04,
-                          color: Colors.grey,
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline
+                            fontSize: Get.width * 0.04,
+                            color: Colors.grey,
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.underline
                         ),
                       ),
                     ),
@@ -189,16 +190,20 @@ class _MyScreenState extends State<MyScreen> {
 
   needRegisterProfilePhoto() {
     return Container(
-      alignment: Alignment.center,
-      height: 150,
-      width: 150,
-      child: const Text(
-        'No Image',
-        style: TextStyle(color: Colors.white),
-        textAlign: TextAlign.center,
-      ),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(200), color: Colors.grey),
+        alignment: Alignment.center,
+        height: 150,
+        width: 150,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(200),
+          child: Image.asset('assets/noimage.png'),
+        )
+      // const Text(
+      //   'No Image',
+      //   style: TextStyle(color: Colors.white),
+      //   textAlign: TextAlign.center,
+      // ),
+      // decoration: BoxDecoration(
+      //     borderRadius: BorderRadius.circular(200), color: Colors.grey),
     );
   }
 
@@ -210,24 +215,24 @@ class _MyScreenState extends State<MyScreen> {
         borderRadius: BorderRadius.circular(200),
         child: savedPetData[petCurrentIndex][0] == ''
             ? Container(
-                alignment: Alignment.center,
-                height: 150,
-                width: 150,
-                child: const Text(
-                  'No Image',
-                  style: TextStyle(color: Colors.white),
-                  textAlign: TextAlign.center,
-                ),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(200),
-                    color: Colors.grey),
-              )
+          alignment: Alignment.center,
+          height: 150,
+          width: 150,
+          child: const Text(
+            'No Image',
+            style: TextStyle(color: Colors.white),
+            textAlign: TextAlign.center,
+          ),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(200),
+              color: Colors.grey),
+        )
             : Image.file(
-                File(savedPetData[petCurrentIndex][1]),
+          File(savedPetData[petCurrentIndex][1]),
 
-                /// savedPetData[index][1] => index 를 currentIndex 등으로 저장해둬야 함
-                fit: BoxFit.fill,
-              ),
+          /// savedPetData[index][1] => index 를 currentIndex 등으로 저장해둬야 함
+          fit: BoxFit.fill,
+        ),
       ),
     );
   }
@@ -311,7 +316,7 @@ class _MyScreenState extends State<MyScreen> {
             // ),
             InkWell(
               onTap: () => Get.to(() => EditMyPetInfoScreen())!.then(
-                (_) {
+                    (_) {
                   getPetInfo();
                 },
               ),
@@ -320,7 +325,7 @@ class _MyScreenState extends State<MyScreen> {
                 child: Text(
                   '추가',
                   style: TextStyle(
-                      fontSize: Get.width * 0.05, color: Colors.blueAccent),
+                      fontSize: Get.width * 0.05, color: kPrimaryFirstColor),
                 ),
               ),
             ),
@@ -361,60 +366,60 @@ class _MyScreenState extends State<MyScreen> {
                             : const SizedBox(),
                         petCurrentIndex == index
                             ? Icon(
-                                Icons.check,
-                                color: Colors.blueAccent,
-                                size: Get.width * 0.05,
-                              )
+                          Icons.check,
+                          color: kPrimaryFirstColor,
+                          size: Get.width * 0.05,
+                        )
                             : const SizedBox(),
                       ],
                     )),
-                Expanded(
-                  flex: 3,
-                  child: InkWell(
-                    onTap: () => Get.to(
-                      () => EditMyPetInfoScreen(
-                        index: int.parse(savedPetData[index][0]),
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        '정보 변경하기',
-                        style: TextStyle(
-                            fontSize: Get.width * 0.035, color: Colors.grey),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                ),
+                // Expanded(
+                //   flex: 3,
+                //   child: InkWell(
+                //     onTap: () => Get.to(
+                //           () => EditMyPetInfoScreen(
+                //         index: int.parse(savedPetData[index][0]),
+                //       ),
+                //     ),
+                //     child: Padding(
+                //       padding: const EdgeInsets.all(8.0),
+                //       child: Text(
+                //         '정보 변경하기',
+                //         style: TextStyle(
+                //             fontSize: Get.width * 0.035, color: Colors.grey),
+                //         textAlign: TextAlign.center,
+                //       ),
+                //     ),
+                //   ),
+                // ),
                 Expanded(
                   flex: 2,
                   child: index == 0
                       ? SizedBox()
                       : InkWell(
-                          onTap: () async {
-                            SharedPreferences prefs =
-                                await SharedPreferences.getInstance();
-                            setState(() {
-                              prefs.remove('savedPetData$petCurrentIndex');
-                              savedPetData.removeAt(index);
-                              petCurrentIndex = 0;
-                              prefs.setInt('petCurrentIndex', 0);
-                              prefs.setInt(
-                                  'petCount', prefs.getInt('petCount')! - 1);
-                            });
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              '삭제',
-                              style: TextStyle(
-                                  fontSize: Get.width * 0.035,
-                                  color: Colors.grey),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
+                    onTap: () async {
+                      SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                      setState(() {
+                        prefs.remove('savedPetData$petCurrentIndex');
+                        savedPetData.removeAt(index);
+                        petCurrentIndex = 0;
+                        prefs.setInt('petCurrentIndex', 0);
+                        prefs.setInt(
+                            'petCount', prefs.getInt('petCount')! - 1);
+                      });
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        '삭제',
+                        style: TextStyle(
+                            fontSize: Get.width * 0.035,
+                            color: Colors.grey),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),

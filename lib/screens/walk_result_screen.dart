@@ -69,8 +69,8 @@ class _WalkResultScreenState extends State<WalkResultScreen> {
                   Polyline(
                     // An optional tag to distinguish polylines in callback
                     points: getPoints(),
-                    color: kPrimaryFirstColor,
-                    strokeWidth: 10.0,
+                    color: Colors.red,
+                    strokeWidth: 8.0,
                   ),
                 ],
               ),

@@ -26,13 +26,9 @@ class _AddEventScreenState extends State<AddEventScreen> {
   bool processing = false;
 
   var _croppedFile;
-  // var _category;
-  // final _categoryList = [
-  //   '부자되는 방법',
-  //   '부자 동기부여',
-  //   '투자에 대한 생각',
-  //   '공지사항'
-  // ];
+  DateTime _eventStartDate = DateTime.now();
+  DateTime _eventEndDate = DateTime.now();
+
   @override
   void initState() {
     // TODO: implement initState
@@ -49,7 +45,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
       return GetBuilder<EventController>(builder: (_) {
         return Scaffold(
           appBar: AppBar(
-            title: Text("새 게시글 작성", style: TextStyle(color: Colors.black, fontFamily: 'Binggrae', fontSize: 26, fontWeight: FontWeight.bold)),
+            title: Text("새 이벤트 작성", style: TextStyle(color: Colors.black, fontFamily: 'Binggrae', fontSize: Get.width * 0.05, fontWeight: FontWeight.bold)),
             backgroundColor: Colors.white,
             elevation: 0,
             leading: _isLoading ? SizedBox() : InkWell(
@@ -226,7 +222,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                             alignment: Alignment.center,
                             width: MediaQuery.of(context).size.width * 1,
                             height:
-                            MediaQuery.of(context).size.height * 0.2,
+                            MediaQuery.of(context).size.height * 0.12,
                             child: Stack(children: [
                               Container(
                                 decoration: BoxDecoration(
@@ -272,6 +268,138 @@ class _AddEventScreenState extends State<AddEventScreen> {
                                 ),
                               ),
                             ]),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 8.0),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Flexible(
+                                child: Container(
+                                    child: Text('이벤트 기간',
+                                        style: TextStyle(
+                                            fontFamily: 'Binggrae',
+                                            fontSize: Get.width * 0.05,
+                                            fontWeight:
+                                            FontWeight.bold))),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 3),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              /// 시작시간
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 4.0),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.black38, width: 2),
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: Colors.grey.withOpacity(0.1),
+                                    ),
+                                    width: Get.width / 2.2,
+                                    child: ListTile(
+                                      title: Row(
+                                        children: [
+                                          const Spacer(),
+                                          Text(
+                                              "${_eventStartDate.year}년 ${_eventStartDate.month}월 ${_eventStartDate.day}일",
+                                              style: TextStyle(
+                                                  fontFamily: 'Pretendard',
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: Get.width * 0.04)),
+                                          const Spacer(),
+                                        ],
+                                      ),
+                                      onTap: () async {
+                                        DateTime picked = (await showDatePicker(
+                                          context: context,
+                                          initialDate: _eventStartDate,
+                                          firstDate: DateTime(_eventStartDate.year - 5),
+                                          lastDate: DateTime(_eventStartDate.year + 5),
+                                          builder: (BuildContext context, Widget? child) {
+                                            return Theme(
+                                              data: ThemeData.light().copyWith(
+                                                colorScheme: const ColorScheme.light().copyWith(
+                                                  primary: kPrimaryFirstColor,
+                                                ),
+                                                buttonTheme: const ButtonThemeData(
+                                                    textTheme: ButtonTextTheme.primary),
+                                              ),
+                                              child: child!,
+                                            );
+                                          },
+                                        )) ??
+                                            _eventStartDate; // cancel 누르면 기존 값 유지
+                                        setState(() {
+                                          _eventStartDate = picked;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const Text('~'),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 4.0),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.black38, width: 2),
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: Colors.grey.withOpacity(0.1),
+                                    ),
+                                    width: Get.width / 2.2,
+                                    child: ListTile(
+                                      title: Row(
+                                        children: [
+                                          const Spacer(),
+                                          Text(
+                                              "${_eventEndDate.year}년 ${_eventEndDate.month}월 ${_eventEndDate.day}일",
+                                              style: TextStyle(
+                                                  fontFamily: 'Pretendard',
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: Get.width * 0.04)),
+                                          const Spacer(),
+                                        ],
+                                      ),
+                                      onTap: () async {
+                                        DateTime picked = (await showDatePicker(
+                                          context: context,
+                                          initialDate: _eventEndDate,
+                                          firstDate: DateTime(_eventEndDate.year - 5),
+                                          lastDate: DateTime(_eventEndDate.year + 5),
+                                          builder: (BuildContext context, Widget? child) {
+                                            return Theme(
+                                              data: ThemeData.light().copyWith(
+                                                colorScheme: const ColorScheme.light().copyWith(
+                                                  primary: kPrimaryFirstColor,
+                                                ),
+                                                buttonTheme: const ButtonThemeData(
+                                                    textTheme: ButtonTextTheme.primary),
+                                              ),
+                                              child: child!,
+                                            );
+                                          },
+                                        )) ??
+                                            _eventEndDate; // cancel 누르면 기존 값 유지
+                                        setState(() {
+                                          _eventEndDate = picked;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -427,6 +555,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
       'description': _description,
       'writer': 'admin',
       'imgUrl': noticeController.imgUrl,
+      'startAt': _eventStartDate,
+      'endAt': _eventEndDate,
       'createdAt': DateTime.now()
     };
 
@@ -435,21 +565,6 @@ class _AddEventScreenState extends State<AddEventScreen> {
     });
 
     noticeController.addEvent(id, eventData);
-
-    // switch(_category) {
-    //   case '부자되는 방법':
-    //     noticeController.addHowToBeRichNotice(id, noticeData);
-    //     break;
-    //   case '부자 동기부여':
-    //     noticeController.addMotivationNotice(id, noticeData);
-    //     break;
-    //   case '투자에 대한 생각':
-    //     noticeController.addThinkAboutRichNotice(id, noticeData);
-    //     break;
-    //   case '공지사항':
-    //     noticeController.addNoticeBoard(id, noticeData);
-    //     break;
-    // }
 
     Get.back();
     Get.snackbar('이벤트 작성', '작성이 완료되었습니다.',backgroundColor: kPrimaryFirstColor.withOpacity(0.8), colorText: Colors.black);

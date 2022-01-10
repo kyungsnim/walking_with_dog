@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:walking_with_dog/constants/constants.dart';
 import 'package:walking_with_dog/models/my_pet_model.dart';
 
 class EditMyPetInfoScreen extends StatefulWidget {
@@ -247,7 +248,7 @@ class _EditMyPetInfoScreenState extends State<EditMyPetInfoScreen> {
         width: Get.width * 0.9,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(30),
-          color: Colors.blueAccent,
+          color: kPrimaryFirstColor,
         ),
         child: Text(
           '완료',
@@ -265,16 +266,13 @@ class _EditMyPetInfoScreenState extends State<EditMyPetInfoScreen> {
     return InkWell(
       onTap: () => getGalleryImage(),
       child: Container(
-        alignment: Alignment.center,
-        height: 150,
-        width: 150,
-        child: const Text(
-          'No Image',
-          style: TextStyle(color: Colors.white),
-          textAlign: TextAlign.center,
-        ),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(200), color: Colors.grey),
+          alignment: Alignment.center,
+          height: 150,
+          width: 150,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(200),
+            child: Image.asset('assets/noimage.png'),
+          ),
       ),
     );
   }
@@ -323,7 +321,7 @@ class _EditMyPetInfoScreenState extends State<EditMyPetInfoScreen> {
     return Row(
       children: <Widget>[
         Checkbox(
-          activeColor: Colors.blueAccent,
+          activeColor: kPrimaryFirstColor,
           value: _completeReutering,
           onChanged: (newValue) {
             setState(() {
