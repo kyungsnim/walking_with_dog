@@ -34,25 +34,59 @@ class _EditMyPetInfoScreenState extends State<EditMyPetInfoScreen> {
   @override
   void initState() {
     super.initState();
+
+    if(widget.index != null) {
+      getPetData(widget.index!);
+    }
     // _nameController
     // _sexController.text = '남아';
   }
 
+  getPetData(int index) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    if (prefs.getStringList('savedPetData$index') != null) {
+      List<String> tmp = prefs.getStringList('savedPetData$index')!;
+
+      // print(tmp[1]); // 사진
+      // print(tmp[2]); // 이름
+      // print(tmp[3]); // 생년월일
+      // print(tmp[4]); // 몸무게
+      // print(tmp[5]); // 품종
+      // print(tmp[6]); // 성별
+      // print(tmp[7]); // 중성화 여부
+
+      setState(() {
+        _imagePath = tmp[1];
+        _nameController.text = tmp[2];
+        _birthController.text = tmp[3];
+        _weightController.text = tmp[4];
+        _kindController.text = tmp[5];
+        _sexController.text = tmp[6];
+
+        if(tmp[7] =='true') {
+          _completeReutering = true;
+        } else {
+          _completeReutering = false;
+        }
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
-          title: const Text(
-            '반려견 정보 등록/수정',
-            style: TextStyle(
+          title: Text(
+            widget.index != null ? '반려견 정보 수정' : '반려견 정보 등록',
+            style: const TextStyle(
               color: Colors.black,
             ),
           ),
           leading: InkWell(
             onTap: () => Get.back(),
-            child: Icon(
+            child: const Icon(
               Icons.arrow_back_ios,
               color: Colors.black,
             ),
@@ -214,33 +248,54 @@ class _EditMyPetInfoScreenState extends State<EditMyPetInfoScreen> {
     return InkWell(
       onTap: () async {
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        int num = 0;
-        int petIndex = 0;
 
-        if (prefs.getInt('petCount') == null) {
-          prefs.setInt('petCount', 0);
-          prefs.setInt('petCurrentIndex', 0);
-          num = 0;
+        if(widget.index != null) {
+          /// 정보 변경인 경우
+          /// 로컬DB에 저장하기
+          prefs.setStringList('savedPetData${widget.index}', [
+            widget.index.toString(),
+            _imagePath,
+            _nameController.text,
+            _birthController.text,
+            _weightController.text,
+            _kindController.text,
+            _sexController.text,
+            _completeReutering.toString(),
+          ]);
+
+          Get.back();
+          Get.snackbar('반려견 정보수정', '정보수정이 완료되었습니다.');
+
         } else {
-          num = prefs.getInt('petCount')!;
+          /// 신규 등록인 경우
+          int num = 0;
+          int petIndex = 0;
+
+          if (prefs.getInt('petCount') == null) {
+            prefs.setInt('petCount', 0);
+            prefs.setInt('petCurrentIndex', 0);
+            num = 0;
+          } else {
+            num = prefs.getInt('petCount')!;
+          }
+
+          /// 로컬DB에 저장하기
+          prefs.setStringList('savedPetData$num', [
+            num.toString(),
+            _imagePath,
+            _nameController.text,
+            _birthController.text,
+            _weightController.text,
+            _kindController.text,
+            _sexController.text,
+            _completeReutering.toString(),
+          ]);
+
+          prefs.setInt('petCount', ++num);
+
+          Get.back();
+          Get.snackbar('반려견 등록', '등록이 완료되었습니다.');
         }
-
-        /// 로컬DB에 저장하기
-        prefs.setStringList('savedPetData$num', [
-          num.toString(),
-          _imagePath,
-          _nameController.text,
-          _birthController.text,
-          _weightController.text,
-          _kindController.text,
-          _sexController.text,
-          _completeReutering.toString(),
-        ]);
-
-        prefs.setInt('petCount', ++num);
-
-        Get.back();
-        Get.snackbar('반려견 등록', '등록이 완료되었습니다.');
       },
       child: Container(
         alignment: Alignment.center,

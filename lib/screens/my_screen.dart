@@ -373,25 +373,29 @@ class _MyScreenState extends State<MyScreen> {
                             : const SizedBox(),
                       ],
                     )),
-                // Expanded(
-                //   flex: 3,
-                //   child: InkWell(
-                //     onTap: () => Get.to(
-                //           () => EditMyPetInfoScreen(
-                //         index: int.parse(savedPetData[index][0]),
-                //       ),
-                //     ),
-                //     child: Padding(
-                //       padding: const EdgeInsets.all(8.0),
-                //       child: Text(
-                //         '정보 변경하기',
-                //         style: TextStyle(
-                //             fontSize: Get.width * 0.035, color: Colors.grey),
-                //         textAlign: TextAlign.center,
-                //       ),
-                //     ),
-                //   ),
-                // ),
+                Expanded(
+                  flex: 3,
+                  child: InkWell(
+                    onTap: () {
+                      print(savedPetData[index][0]);
+                      Get.to(
+                              () =>
+                              EditMyPetInfoScreen(
+                                index: int.parse(savedPetData[index][0]),
+                              )
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        '정보 변경하기',
+                        style: TextStyle(
+                            fontSize: Get.width * 0.035, color: Colors.grey),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ),
                 Expanded(
                   flex: 2,
                   child: index == 0
