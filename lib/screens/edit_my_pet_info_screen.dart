@@ -38,8 +38,6 @@ class _EditMyPetInfoScreenState extends State<EditMyPetInfoScreen> {
     if(widget.index != null) {
       getPetData(widget.index!);
     }
-    // _nameController
-    // _sexController.text = '남아';
   }
 
   getPetData(int index) async {
@@ -132,7 +130,7 @@ class _EditMyPetInfoScreenState extends State<EditMyPetInfoScreen> {
               Expanded(
                 flex: 1,
                 child: textField(
-                    '반려동물 생년월 (MMMMDD)', 'ex) 201911', _birthController),
+                    '반려동물 생년월 (YYYYMM)', 'ex) 201911', _birthController),
               ),
               SizedBox(width: 20),
               Expanded(

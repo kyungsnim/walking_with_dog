@@ -20,6 +20,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
   String _title = '';
   String _town = '';
   String _description = '';
+  String _placeUrl = '';
   var _isLoading = false;
   final _formKey = GlobalKey<FormState>();
   final _key = GlobalKey<ScaffoldState>();
@@ -405,6 +406,71 @@ class _AddEventScreenState extends State<AddEventScreen> {
                       ),
                     ),
                     Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 8.0),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Flexible(
+                                child: Container(
+                                    child: Text('장소 url',
+                                        style: TextStyle(
+                                            fontFamily: 'Binggrae', fontSize: Get.width * 0.05,
+                                            fontWeight:
+                                            FontWeight.bold))),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 3),
+                          Container(
+                            alignment: Alignment.center,
+                            width: MediaQuery.of(context).size.width * 1,
+                            height:
+                            MediaQuery.of(context).size.height * 0.06,
+                            child: Stack(children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                    border: Border.symmetric(
+                                        horizontal: BorderSide(
+                                            color: Colors.black54,
+                                            width: 0.5))),
+                                width:
+                                MediaQuery.of(context).size.width * 1,
+                                height:
+                                MediaQuery.of(context).size.height *
+                                    1,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 8),
+                                child: TextFormField(
+                                  controller:
+                                  noticeController.placeUrlController,
+                                  cursorColor: Colors.black,
+                                  validator: (val) {
+                                    if (val!.isEmpty) {
+                                      return '장소 url을 입력하세요';
+                                    } else {
+                                      return null;
+                                    }
+                                  },
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: '장소 url 입력',
+                                    hintStyle: TextStyle(
+                                      fontFamily: 'Binggrae', fontSize: Get.width * 0.04,),),
+                                  onChanged: (val) {
+                                    _placeUrl = val;
+                                  },
+                                ),
+                              ),
+                            ]),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8.0, vertical: 8.0),
                         child: Column(
@@ -555,6 +621,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
       'description': _description,
       'writer': 'admin',
       'imgUrl': noticeController.imgUrl,
+      'placeUrl': _placeUrl,
       'startAt': _eventStartDate,
       'endAt': _eventEndDate,
       'createdAt': DateTime.now()

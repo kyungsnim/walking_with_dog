@@ -7,6 +7,7 @@ class EventController extends GetxController {
   static EventController to = Get.find();
   TextEditingController titleController = TextEditingController();
   TextEditingController townController = TextEditingController();
+  TextEditingController placeUrlController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   TextEditingController commentController = TextEditingController();
   String imgUrl = '';

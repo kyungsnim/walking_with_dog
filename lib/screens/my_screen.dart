@@ -2,16 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:walking_with_dog/constants/constants.dart';
-import 'package:walking_with_dog/models/my_pet_model.dart';
-import 'package:walking_with_dog/screens/register_pet_info_screen.dart';
 import 'package:walking_with_dog/screens/terms_of_location_service_screen.dart';
 import 'package:walking_with_dog/screens/terms_of_service_screen.dart';
 import 'package:walking_with_dog/utils/launch_url.dart';
-import 'package:walking_with_dog/widgets/loading_indicator.dart';
 
 import 'edit_my_pet_info_screen.dart';
 
@@ -99,9 +94,9 @@ class _MyScreenState extends State<MyScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       savedPetData.isEmpty ||
-                          savedPetData[petCurrentIndex][0].isEmpty
+                              savedPetData[petCurrentIndex][0].isEmpty
                           ? // _imageFile == null ?
-                      needRegisterProfilePhoto()
+                          needRegisterProfilePhoto()
                           : myProfilePhoto()
                     ],
                   ),
@@ -115,30 +110,18 @@ class _MyScreenState extends State<MyScreen> {
                       myPetAreaList(),
                     ],
                   ),
-                  // ElevatedButton(
-                  //   onPressed: () async {
-                  //     SharedPreferences prefs =
-                  //         await SharedPreferences.getInstance();
-                  //     prefs.clear();
-                  //
-                  //     setState(() {
-                  //       savedPetData = [];
-                  //     });
-                  //   },
-                  //   child: Text('DB초기화'),
-                  // ),
                   SizedBox(height: 20),
                   InkWell(
                     onTap: () => Get.to(() => TermsOfServiceScreen()),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0, vertical: 8.0),
                       child: Text(
                         '서비스 이용약관',
                         style: TextStyle(
-                            fontSize: Get.width * 0.04,
-                            color: Colors.grey,
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline
+                          fontSize: Get.width * 0.04,
+                          color: Colors.grey,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
@@ -146,21 +129,22 @@ class _MyScreenState extends State<MyScreen> {
                   InkWell(
                     onTap: () => Get.to(() => TermsOfLocationServiceScreen()),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0, vertical: 8.0),
                       child: Text(
                         '위치 서비스 이용약관',
                         style: TextStyle(
-                            fontSize: Get.width * 0.04,
-                            color: Colors.grey,
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline
+                          fontSize: Get.width * 0.04,
+                          color: Colors.grey,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
                   ),
                   SizedBox(height: Get.height * 0.05),
                   InkWell(
-                    onTap: () => launchUrl('https://c59mrhltv3l.typeform.com/to/JDqcpZAp'),
+                    onTap: () => launchUrl(
+                        'https://c59mrhltv3l.typeform.com/to/JDqcpZAp'),
                     child: Container(
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
@@ -170,6 +154,35 @@ class _MyScreenState extends State<MyScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: Text(
                           '개발자에게 제안하기',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: Get.width * 0.05,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: Get.height * 0.02),
+                  InkWell(
+                    onTap: () async {
+                      SharedPreferences prefs =
+                          await SharedPreferences.getInstance();
+                      prefs.clear();
+
+                      setState(() {
+                        savedPetData = [];
+                      });
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all()),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Text(
+                          'DB 초기화',
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: Get.width * 0.05,
@@ -197,14 +210,14 @@ class _MyScreenState extends State<MyScreen> {
           borderRadius: BorderRadius.circular(200),
           child: Image.asset('assets/noimage.png'),
         )
-      // const Text(
-      //   'No Image',
-      //   style: TextStyle(color: Colors.white),
-      //   textAlign: TextAlign.center,
-      // ),
-      // decoration: BoxDecoration(
-      //     borderRadius: BorderRadius.circular(200), color: Colors.grey),
-    );
+        // const Text(
+        //   'No Image',
+        //   style: TextStyle(color: Colors.white),
+        //   textAlign: TextAlign.center,
+        // ),
+        // decoration: BoxDecoration(
+        //     borderRadius: BorderRadius.circular(200), color: Colors.grey),
+        );
   }
 
   myProfilePhoto() {
@@ -215,24 +228,24 @@ class _MyScreenState extends State<MyScreen> {
         borderRadius: BorderRadius.circular(200),
         child: savedPetData[petCurrentIndex][0] == ''
             ? Container(
-          alignment: Alignment.center,
-          height: 150,
-          width: 150,
-          child: const Text(
-            'No Image',
-            style: TextStyle(color: Colors.white),
-            textAlign: TextAlign.center,
-          ),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(200),
-              color: Colors.grey),
-        )
+                alignment: Alignment.center,
+                height: 150,
+                width: 150,
+                child: const Text(
+                  'No Image',
+                  style: TextStyle(color: Colors.white),
+                  textAlign: TextAlign.center,
+                ),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(200),
+                    color: Colors.grey),
+              )
             : Image.file(
-          File(savedPetData[petCurrentIndex][1]),
+                File(savedPetData[petCurrentIndex][1]),
 
-          /// savedPetData[index][1] => index 를 currentIndex 등으로 저장해둬야 함
-          fit: BoxFit.fill,
-        ),
+                /// savedPetData[index][1] => index 를 currentIndex 등으로 저장해둬야 함
+                fit: BoxFit.fill,
+              ),
       ),
     );
   }
@@ -316,7 +329,7 @@ class _MyScreenState extends State<MyScreen> {
             // ),
             InkWell(
               onTap: () => Get.to(() => EditMyPetInfoScreen())!.then(
-                    (_) {
+                (_) {
                   getPetInfo();
                 },
               ),
@@ -366,10 +379,10 @@ class _MyScreenState extends State<MyScreen> {
                             : const SizedBox(),
                         petCurrentIndex == index
                             ? Icon(
-                          Icons.check,
-                          color: kPrimaryFirstColor,
-                          size: Get.width * 0.05,
-                        )
+                                Icons.check,
+                                color: kPrimaryFirstColor,
+                                size: Get.width * 0.05,
+                              )
                             : const SizedBox(),
                       ],
                     )),
@@ -378,12 +391,9 @@ class _MyScreenState extends State<MyScreen> {
                   child: InkWell(
                     onTap: () {
                       print(savedPetData[index][0]);
-                      Get.to(
-                              () =>
-                              EditMyPetInfoScreen(
-                                index: int.parse(savedPetData[index][0]),
-                              )
-                      );
+                      Get.to(() => EditMyPetInfoScreen(
+                            index: int.parse(savedPetData[index][0]),
+                          ));
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -401,29 +411,29 @@ class _MyScreenState extends State<MyScreen> {
                   child: index == 0
                       ? SizedBox()
                       : InkWell(
-                    onTap: () async {
-                      SharedPreferences prefs =
-                      await SharedPreferences.getInstance();
-                      setState(() {
-                        prefs.remove('savedPetData$petCurrentIndex');
-                        savedPetData.removeAt(index);
-                        petCurrentIndex = 0;
-                        prefs.setInt('petCurrentIndex', 0);
-                        prefs.setInt(
-                            'petCount', prefs.getInt('petCount')! - 1);
-                      });
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        '삭제',
-                        style: TextStyle(
-                            fontSize: Get.width * 0.035,
-                            color: Colors.grey),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
+                          onTap: () async {
+                            SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
+                            setState(() {
+                              prefs.remove('savedPetData$petCurrentIndex');
+                              savedPetData.removeAt(index);
+                              petCurrentIndex = 0;
+                              prefs.setInt('petCurrentIndex', 0);
+                              prefs.setInt(
+                                  'petCount', prefs.getInt('petCount')! - 1);
+                            });
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              '삭제',
+                              style: TextStyle(
+                                  fontSize: Get.width * 0.035,
+                                  color: Colors.grey),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
                 ),
               ],
             ),

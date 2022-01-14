@@ -6,6 +6,7 @@ class EventModel {
   String town;          // 주소 (동)
   String description;   // 이벤트 내용
   String imgUrl;
+  String placeUrl;
   DateTime startAt;
   DateTime endAt;
   DateTime createdAt;
@@ -16,6 +17,7 @@ class EventModel {
       required this.town,
       required this.description,
       required this.imgUrl,
+      required this.placeUrl,
       required this.startAt,
       required this.endAt,
       required this.createdAt});
@@ -26,6 +28,7 @@ class EventModel {
         "town": town,
         "description": description,
         "imgUrl": imgUrl,
+        "contentUrl": placeUrl,
         "startAt": startAt,
         "endAt": endAt,
     "createdAt": createdAt
@@ -37,6 +40,7 @@ class EventModel {
         town = data['town'],
         description = data['description'],
         imgUrl = data['imgUrl'] ?? '',
+        placeUrl = data['placeUrl'] ?? '',
         startAt = data['startAt'].toDate() ?? DateTime.now(),
         endAt = data['endAt'].toDate() ?? DateTime.now(),
         createdAt = data['createdAt'].toDate();

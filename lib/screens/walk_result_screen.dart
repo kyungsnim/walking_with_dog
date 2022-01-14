@@ -43,7 +43,7 @@ class _WalkResultScreenState extends State<WalkResultScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Future.delayed(const Duration(milliseconds: 300), () {
+    Future.delayed(const Duration(milliseconds: 1500), () {
       checkMapSize(context);
     });
     return Scaffold(

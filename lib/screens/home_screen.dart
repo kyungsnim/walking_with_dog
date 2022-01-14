@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:walking_with_dog/constants/data4.dart';
 import 'package:walking_with_dog/screens/my_screen.dart';
 import 'package:walking_with_dog/screens/place_screen.dart';
 import 'package:walking_with_dog/screens/walk_screen.dart';
@@ -39,6 +41,20 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     // WidgetsBinding.instance!.addObserver(this);
     // setStatus('Online');
+    _getCurrentLocation();
+  }
+
+  _getCurrentLocation() async {
+    Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
+        .then((Position position) async {
+      setState(() {
+        myLocation = position;
+      });
+
+      // await _getAddress();
+    }).catchError((e) {
+      print(e);
+    });
   }
 
   @override

@@ -12,13 +12,15 @@ import 'package:walking_with_dog/screens/search_place_screen.dart';
 import 'package:walking_with_dog/utils/launch_url.dart';
 import 'package:walking_with_dog/widgets/loading_indicator.dart';
 import 'package:walking_with_dog/widgets/show_create_dialog.dart';
+import 'package:walking_with_dog/widgets/show_wait_dialog.dart';
 
 class PlaceScreen extends StatefulWidget {
   @override
   _PlaceScreenState createState() => _PlaceScreenState();
 }
 
-class _PlaceScreenState extends State<PlaceScreen> with AutomaticKeepAliveClientMixin {
+class _PlaceScreenState extends State<PlaceScreen>
+    with AutomaticKeepAliveClientMixin {
   // Position? _location;
   final TextEditingController _searchController = TextEditingController();
   TextEditingController _pwdController = TextEditingController();
@@ -51,9 +53,7 @@ class _PlaceScreenState extends State<PlaceScreen> with AutomaticKeepAliveClient
   GlobalKey<ScaffoldState> scaffoldState = GlobalKey();
 
   Stream<QuerySnapshot> newStream() {
-    return eventRef
-        .limit(FETCH_ROW * (_lastRow + 1))
-        .snapshots();
+    return eventRef.limit(FETCH_ROW * (_lastRow + 1)).snapshots();
   }
 
   @override
@@ -64,7 +64,7 @@ class _PlaceScreenState extends State<PlaceScreen> with AutomaticKeepAliveClient
 
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent &&
+              _scrollController.position.maxScrollExtent &&
           mounted) {
         setState(() {
           stream = newStream();
@@ -86,20 +86,7 @@ class _PlaceScreenState extends State<PlaceScreen> with AutomaticKeepAliveClient
       return Scaffold(
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
-        body: myLocation == null
-            ? SizedBox(
-            width: Get.width,
-            height: Get.height * 0.55,
-            child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    loadingIndicator(),
-                    const SizedBox(height: 10),
-                    const Text('현재 위치를 가져오고 있습니다.')
-                  ],
-                )))
-            : Container(
+        body: Container(
           margin: EdgeInsets.only(right: 20, left: 20, top: 20),
           child: ListView(
             children: <Widget>[
@@ -120,10 +107,13 @@ class _PlaceScreenState extends State<PlaceScreen> with AutomaticKeepAliveClient
               SizedBox(
                 height: Get.height * 0.03,
               ),
-              Text('이벤트 소식', style: TextStyle(
-                fontSize: Get.width * 0.05,
-                fontWeight: FontWeight.bold,
-              ),),
+              Text(
+                '이벤트 소식',
+                style: TextStyle(
+                  fontSize: Get.width * 0.05,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               _eventView(context),
             ],
           ),
@@ -154,6 +144,17 @@ class _PlaceScreenState extends State<PlaceScreen> with AutomaticKeepAliveClient
             fontWeight: FontWeight.bold,
           ),
         ),
+        Spacer(),
+        myLocation == null ? loadingIndicator() :
+        Icon(Icons.location_on_outlined),
+        myLocation == null ? const Text('현재위치를 가져오는 중입니다.', style: TextStyle(fontSize: 10,)) : Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('위도: ${myLocation!.latitude.toString().substring(0, 10)}', style: const TextStyle(fontSize: 10,),),
+            Text('경도: ${myLocation!.longitude.toString().substring(0, 10)}', style: const TextStyle(fontSize: 10,),),
+          ],
+        ),
+
       ],
     );
   }
@@ -193,12 +194,19 @@ class _PlaceScreenState extends State<PlaceScreen> with AutomaticKeepAliveClient
         SizedBox(width: Get.width * 0.02),
         ElevatedButton(
           onPressed: () {
-            Get.to(() => SearchPlaceScreen(
-                searchText: _searchController.text, location: myLocation!));
+            if(myLocation == null) {
+              showWaitDialog(context);
+            } else {
+              Get.to(() =>
+                  SearchPlaceScreen(
+                      searchText: _searchController.text,
+                      location: myLocation!));
+            }
           },
-          child: const Text('검색', style: TextStyle(
-            color: Colors.black,
-          )),
+          child: const Text('검색',
+              style: TextStyle(
+                color: Colors.black,
+              )),
           style: ElevatedButton.styleFrom(
             fixedSize: Size.fromHeight(Get.height * 0.053),
             primary: kPrimaryFirstColor,
@@ -231,43 +239,72 @@ class _PlaceScreenState extends State<PlaceScreen> with AutomaticKeepAliveClient
     );
   }
 
+  _getCurrentLocation() async {
+    Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
+        .then((Position position) async {
+      setState(() {
+        myLocation = position;
+      });
+
+      // await _getAddress();
+    }).catchError((e) {
+      print(e);
+    });
+  }
+
   _categoryIconView() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         InkWell(
           onTap: () {
-            Get.to(() => SearchPlaceScreen(
-                  searchText: '애견 카페',
-                  location: myLocation!,
-                ));
+            if(myLocation == null) {
+              showWaitDialog(context);
+            } else {
+              Get.to(() => SearchPlaceScreen(
+                    searchText: '애견 카페',
+                    location: myLocation!,
+                  ));
+            }
           },
           child: _renderItem('assets/icon/icon_2.png', '카페'),
         ),
         InkWell(
           onTap: () {
-            Get.to(() => SearchPlaceScreen(
-                  searchText: '동물 병원',
-                  location: myLocation!,
-                ));
+            if(myLocation == null) {
+              showWaitDialog(context);
+            } else {
+              Get.to(() => SearchPlaceScreen(
+                    searchText: '동물 병원',
+                    location: myLocation!,
+                  ));
+            }
           },
           child: _renderItem('assets/icon/icon_4.png', '병원'),
         ),
         InkWell(
           onTap: () {
-            Get.to(() => SearchPlaceScreen(
-                  searchText: '애견 용품',
-                  location: myLocation!,
-                ));
+            if(myLocation == null) {
+              showWaitDialog(context);
+            } else {
+              Get.to(() => SearchPlaceScreen(
+                    searchText: '애견 용품',
+                    location: myLocation!,
+                  ));
+            }
           },
           child: _renderItem('assets/icon/icon_5.png', '용품점'),
         ),
         InkWell(
           onTap: () {
-            Get.to(() => SearchPlaceScreen(
-                  searchText: '애견 미용',
-                  location: myLocation!,
-                ));
+            if(myLocation == null) {
+              showWaitDialog(context);
+            } else {
+              Get.to(() => SearchPlaceScreen(
+                    searchText: '애견 미용',
+                    location: myLocation!,
+                  ));
+            }
           },
           child: _renderItem('assets/icon/icon_6.png', '미용'),
         ),
@@ -358,9 +395,10 @@ class _PlaceScreenState extends State<PlaceScreen> with AutomaticKeepAliveClient
 
   Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
     return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-      ),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          childAspectRatio: 6 / 7,
+          crossAxisCount: 2,
+        ),
         shrinkWrap: true,
         physics: ClampingScrollPhysics(),
         itemCount: snapshot.length,
@@ -381,9 +419,7 @@ class _PlaceScreenState extends State<PlaceScreen> with AutomaticKeepAliveClient
       key: ValueKey(event.id),
       padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
       child: Container(
-        decoration: BoxDecoration(
-          // color: Colors.white,
-          border: Border.all(color: Colors.grey.withOpacity(0.6)),
+        decoration: const BoxDecoration(
           boxShadow: [
             BoxShadow(
                 offset: Offset(0, 0), blurRadius: 5, color: Colors.white10)
@@ -391,7 +427,9 @@ class _PlaceScreenState extends State<PlaceScreen> with AutomaticKeepAliveClient
         ),
         child: GestureDetector(
           onTap: () {
-            // Get.to(() => EventDetail(event));
+            if (event.placeUrl != '') {
+              launchUrl(event.placeUrl);
+            }
           },
           child: _listItem(event),
         ),
@@ -401,54 +439,101 @@ class _PlaceScreenState extends State<PlaceScreen> with AutomaticKeepAliveClient
 
   _listItem(EventModel event) {
     return Container(
-        width: Get.width,
-        margin: EdgeInsets.symmetric(vertical: 5),
-        // height: 200,
-        child: event.title != null
-            ? Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              height: Get.width * 0.3,
-              decoration: BoxDecoration(boxShadow: [
-                BoxShadow(blurRadius: 5, color: Colors.black54)
-              ]),
-              child: event.imgUrl == ''
-                  ? Placeholder()
-                  : CachedNetworkImage(
-                  imageUrl: event.imgUrl, fit: BoxFit.fill),
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            Expanded(
-              child: Container(
-                height: Get.width * 0.25,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      event.title.length > 20
-                          ? event.title.toString().substring(0, 18) +
-                          '...'
-                          : event.title,
-                      softWrap: true,
-                      style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Binggrae', fontSize: Get.width * 0.03,),
-                    ),
-
-                    Text(
-                      event.createdAt.toString().substring(0, 16),
-                      softWrap: true,
-                      style: TextStyle(fontFamily: 'Binggrae', fontSize: 18),
-                    ),
-                  ],
+      width: Get.width,
+      height: Get.height * 0.3,
+      margin: EdgeInsets.symmetric(vertical: 5),
+      // height: 200,
+      child: event.title != null
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  height: Get.height * 0.13,
+                  decoration: BoxDecoration(boxShadow: [
+                    BoxShadow(blurRadius: 5, color: Colors.black54)
+                  ]),
+                  child: event.imgUrl == ''
+                      ? Placeholder()
+                      : ClipRRect(
+                          child: CachedNetworkImage(
+                              width: Get.width * 0.5,
+                              imageUrl: event.imgUrl,
+                              fit: BoxFit.fitWidth),
+                        ),
                 ),
-              ),
-            ),
-          ],
-        )
-            : SizedBox(),
+                SizedBox(
+                  width: 10,
+                ),
+                Expanded(
+                  child: Container(
+                    height: Get.height * 0.15,
+                    child: Column(
+                      // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0, bottom: 2),
+                          child: Row(
+                            children: [
+                              Text(
+                                event.title.length > 20
+                                    ? event.title.toString().substring(0, 18) +
+                                        '...'
+                                    : event.title,
+                                softWrap: true,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Binggrae',
+                                  fontSize: Get.width * 0.04,
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                event.town.length > 20
+                                    ? event.town.toString().substring(0, 18) +
+                                        '...'
+                                    : event.town,
+                                softWrap: true,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Binggrae',
+                                    fontSize: Get.width * 0.03,
+                                    color: Colors.grey),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Text(
+                          '\'${event.startAt.toString().substring(2, 10).replaceAll('-', '.')} ~ \'${event.endAt.toString().substring(2, 10).replaceAll('-', '.')}',
+                          softWrap: true,
+                          style: TextStyle(
+                              fontFamily: 'Binggrae',
+                              fontSize: Get.width * 0.03),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 2.0),
+                          child: Text(
+                            event.description.length > 20
+                                ? event.description
+                                        .toString()
+                                        .substring(0, 18) +
+                                    '...'
+                                : event.description,
+                            softWrap: true,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Binggrae',
+                              fontSize: Get.width * 0.03,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            )
+          : SizedBox(),
     );
   }
 

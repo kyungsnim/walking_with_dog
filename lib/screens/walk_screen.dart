@@ -637,7 +637,7 @@ class _WalkScreenState extends State<WalkScreen>
     Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
         .then((Position position) async {
       setState(() {
-        myLocation = position;
+        // myLocation = position;
         print('CURRENT POS: $_currentPosition');
         mapController!.animateCamera(
           CameraUpdate.newCameraPosition(
